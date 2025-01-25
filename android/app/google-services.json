@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1031967955031",
+    "project_id": "generaworker",
+    "storage_bucket": "generaworker.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1031967955031:android:e6b1af2902232bcec86b12",
+        "android_client_info": {
+          "package_name": "com.example.mobile_abz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANj4wAHlhoyf6Hbsuwj2OJUheDaRkGp-8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
