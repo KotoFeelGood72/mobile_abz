@@ -1,5 +1,5 @@
 import 'package:auto_route/auto_route.dart';
-
+import 'package:flutter/material.dart';
 import 'package:mobile_abz/app/router/app_router.gr.dart';
 
 @AutoRouterConfig(replaceInRouteName: 'Screen|Page,Route')
@@ -9,36 +9,36 @@ class AppRouter extends RootStackRouter {
 
   @override
   List<AutoRoute> get routes => [
-        AutoRoute(
-          page: HomeRoute.page,
-          path: '/home',
-          initial: true,
-        ),
-        AutoRoute(
-          page: ReviewsRoute.page,
-          path: '/reviews',
-        ),
-        AutoRoute(
-          page: FaqRoute.page,
-          path: '/faq',
-        ),
-        AutoRoute(
-          page: ContactsRoute.page,
-          path: '/contacts',
-        ),
-        AutoRoute(
-          page: FeaturedTemplateRoute.page,
-          path: '/featured',
-          children: [
-            AutoRoute(
-              page: FeaturedRoute.page,
-              path: '',
-            ),
-            AutoRoute(
-              page: FeaturedIdRoute.page,
-              path: ':id',
-            ),
-          ],
-        ),
+        CustomRoute(
+            page: HomeRoute.page,
+            path: '/home',
+            initial: true,
+            durationInMilliseconds: 100, // Длительность анимации
+            transitionsBuilder: TransitionsBuilders.fadeIn),
+        CustomRoute(
+            page: ReviewsRoute.page,
+            path: '/reviews',
+            durationInMilliseconds: 100, // Длительность анимации
+            transitionsBuilder: TransitionsBuilders.fadeIn),
+        CustomRoute(
+            page: FaqRoute.page,
+            path: '/faq',
+            durationInMilliseconds: 100, // Длительность анимации
+            transitionsBuilder: TransitionsBuilders.fadeIn),
+        CustomRoute(
+            page: ContactsRoute.page,
+            path: '/contacts',
+            durationInMilliseconds: 100, // Длительность анимации
+            transitionsBuilder: TransitionsBuilders.fadeIn),
+        CustomRoute(
+            page: FeaturedRoute.page,
+            path: '/featured',
+            durationInMilliseconds: 100, // Длительность анимации
+            transitionsBuilder: TransitionsBuilders.fadeIn),
+        CustomRoute(
+            page: FeaturedIdRoute.page,
+            path: '/featured/:id',
+            durationInMilliseconds: 100, // Длительность анимации
+            transitionsBuilder: TransitionsBuilders.fadeIn),
       ];
 }

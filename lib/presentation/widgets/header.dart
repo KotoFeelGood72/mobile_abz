@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_abz/app/themes/app_colors.dart';
+import 'package:mobile_abz/presentation/widgets/form_bottom_sheet.dart';
 
 class Header extends StatelessWidget {
   const Header({super.key});
@@ -7,7 +8,11 @@ class Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
+      height: 60,
+      decoration: const BoxDecoration(
+        color: AppColors.black,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Row(
         children: [
           Expanded(
@@ -27,7 +32,12 @@ class Header extends StatelessWidget {
             ),
           ),
           GestureDetector(
-            onTap: () => (),
+            onTap: () => FormBottomSheet.show(
+              context: context,
+              title: 'Свяжитесь с нами',
+              subtitle:
+                  'Заполните форму, и мы свяжемся с вами в ближайшее время.',
+            ),
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
               decoration: BoxDecoration(

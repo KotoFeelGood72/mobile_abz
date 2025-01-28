@@ -1,60 +1,119 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:mobile_abz/app/themes/app_colors.dart';
+import 'package:mobile_abz/presentation/widgets/form_bottom_sheet.dart';
 import 'package:mobile_abz/presentation/widgets/layouts.dart';
+import 'package:mobile_abz/presentation/widgets/Icons.dart';
 
 @RoutePage()
-class FaqScreen extends StatelessWidget {
+class FaqScreen extends StatefulWidget {
   const FaqScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final List<Map<String, String>> faqItems = [
-      {
-        'question': 'Сколько будет стоить антигравийная пленка на машину?',
-        'answer': 'Цена зависит от марки автомобиля и выбранной пленки.',
-      },
-      {
-        'question': 'Какой пленкой вы оклеиваете?',
-        'answer':
-            'Мы используем только сертифицированные пленки высокого качества.',
-      },
-      {
-        'question': 'На сколько нужно оставлять машину?',
-        'answer': 'В среднем процесс занимает от 1 до 2 дней.',
-      },
-      {
-        'question': 'У вас есть гарантия?',
-        'answer': 'Да, мы предоставляем гарантию на все выполненные работы.',
-      },
-      {
-        'question': 'Сколько будет стоить забронировать стекло?',
-        'answer': 'Цена варьируется в зависимости от типа стекла и автомобиля.',
-      },
-      {
-        'question': 'Почему так дорого? Нашел гораздо дешевле!',
-        'answer':
-            'Мы предоставляем высокое качество работ и долговечность результата.',
-      },
-      {
-        'question': 'Заклеить фары пленкой?',
-        'answer':
-            'Да, мы защищаем фары полиуретановой антигравийной пленкой. Это помогает предотвратить преждевременное старение пластика и образование на нем механических повреждений.',
-      },
-    ];
+  State<FaqScreen> createState() => _FaqScreenState();
+}
 
+class _FaqScreenState extends State<FaqScreen> {
+  int? _expandedIndex; // Индекс текущего раскрытого элемента
+
+  final List<Map<String, String>> faqItems = [
+    {
+      'question': 'Сколько будет стоить антигравийная пленка на машину?',
+      'answer': 'Цена зависит от марки автомобиля и выбранной пленки.',
+    },
+    {
+      'question': 'Какой пленкой вы оклеиваете?',
+      'answer':
+          'Мы используем только сертифицированные пленки высокого качества.',
+    },
+    {
+      'question': 'На сколько нужно оставлять машину?',
+      'answer': 'В среднем процесс занимает от 1 до 2 дней.',
+    },
+    {
+      'question': 'У вас есть гарантия?',
+      'answer': 'Да, мы предоставляем гарантию на все выполненные работы.',
+    },
+    {
+      'question': 'Сколько будет стоить забронировать стекло?',
+      'answer': 'Цена варьируется в зависимости от типа стекла и автомобиля.',
+    },
+    {
+      'question': 'Почему так дорого? Нашел гораздо дешевле!',
+      'answer':
+          'Мы предоставляем высокое качество работ и долговечность результата.',
+    },
+    {
+      'question': 'Заклеить фары пленкой?',
+      'answer':
+          'Да, мы защищаем фары полиуретановой антигравийной пленкой. Это помогает предотвратить преждевременное старение пластика и образование на нем механических повреждений.',
+    },
+  ];
+
+  void _toggleExpansion(int index) {
+    setState(() {
+      _expandedIndex = (_expandedIndex == index) ? null : index; // Переключение
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Layouts(
+      floatingActionButton: Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          width: double.infinity,
+          margin:
+              const EdgeInsets.symmetric(horizontal: 16), // Отступы по бокам
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.pink
+                    .withOpacity(0.5), // Цвет тени с прозрачностью
+                blurRadius: 11.6, // Радиус размытия
+                spreadRadius: 2, // Распространение тени
+                offset: const Offset(0, 4), // Смещение тени
+              ),
+            ],
+          ),
+          child: ElevatedButton(
+            onPressed: () => FormBottomSheet.show(
+              context: context,
+              title: 'Свяжитесь с нами',
+              subtitle:
+                  'Заполните форму, и мы свяжемся с вами в ближайшее время.',
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.purple,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 16),
+            ),
+            child: const Text(
+              'Связаться с нами',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ),
       currentIndex: 2,
       slivers: [
         SliverToBoxAdapter(
+            child: Animate(
+          effects: const [FadeEffect()],
           child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-            ),
+            padding:
+                const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 80),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 20),
                 const Text(
                   'Часто задаваемые вопросы',
                   style: TextStyle(
@@ -68,56 +127,131 @@ class FaqScreen extends StatelessWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: faqItems.length,
                   itemBuilder: (context, index) {
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF8F8F8),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Theme(
-                        data: Theme.of(context).copyWith(
-                          dividerColor: Colors.transparent,
-                        ),
-                        child: ExpansionTile(
-                          tilePadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          title: Text(
-                            faqItems[index]['question'].toString(),
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.black,
-                            ),
-                          ),
-                          iconColor: const Color(0xFF7E7E7E),
-                          collapsedIconColor: const Color(0xFF7E7E7E),
-                          childrenPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          expandedAlignment: Alignment.centerLeft,
-                          children: [
-                            Text(
-                              faqItems[index]['answer'].toString(),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                color: Color(0xFF7E7E7E),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                    return CustomFaqItem(
+                      question: faqItems[index]['question']!,
+                      answer: faqItems[index]['answer']!,
+                      isExpanded: _expandedIndex == index,
+                      onToggle: () => _toggleExpansion(index),
                     );
                   },
                 ),
               ],
             ),
           ),
-        ),
+        )),
       ],
+    );
+  }
+}
+
+class CustomFaqItem extends StatefulWidget {
+  final String question;
+  final String answer;
+  final bool isExpanded;
+  final VoidCallback onToggle;
+
+  const CustomFaqItem({
+    super.key,
+    required this.question,
+    required this.answer,
+    required this.isExpanded,
+    required this.onToggle,
+  });
+
+  @override
+  State<CustomFaqItem> createState() => _CustomFaqItemState();
+}
+
+class _CustomFaqItemState extends State<CustomFaqItem>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+  }
+
+  @override
+  void didUpdateWidget(CustomFaqItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isExpanded) {
+      _animationController.forward();
+    } else {
+      _animationController.reverse();
+    }
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8F8F8),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          InkWell(
+            onTap: widget.onToggle,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      widget.question,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  AnimatedBuilder(
+                    animation: _animationController,
+                    builder: (context, child) {
+                      return Transform.rotate(
+                        angle: _animationController.value * 3.14159, // Поворот
+                        child: const IconWidget(
+                          iconName: 'up',
+                          color: AppColors.pink,
+                          size: 16,
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizeTransition(
+            sizeFactor: _animationController,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 16, left: 16, bottom: 16),
+              child: Text(
+                widget.answer,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFF7E7E7E),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

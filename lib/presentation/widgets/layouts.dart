@@ -20,24 +20,55 @@ class Layouts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.black,
+      // backgroundColor: AppColors.black,
+
       body: SafeArea(
         bottom: true,
         top: true,
-        child: CustomScrollView(
-          slivers: [
-            if (sliverAppBar != null) sliverAppBar!,
-            const SliverToBoxAdapter(
-              child: Header(),
-            ),
-            ...slivers,
-          ],
+        child: Container(
+          decoration: const BoxDecoration(color: AppColors.white),
+          child: CustomScrollView(
+            slivers: [
+              if (sliverAppBar != null) sliverAppBar!,
+              SliverPersistentHeader(
+                pinned: true, // Закрепить Header
+                floating: false, // Убираем плавающее поведение
+                delegate: _FixedHeaderDelegate(
+                  child: const Header(),
+                ),
+              ),
+              ...slivers,
+            ],
+          ),
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: floatingActionButton,
       bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: currentIndex, // Передаем текущий индекс
+        currentIndex: currentIndex,
       ),
     );
+  }
+}
+
+// Делегат для SliverPersistentHeader
+class _FixedHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+
+  _FixedHeaderDelegate({required this.child});
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return child;
+  }
+
+  @override
+  double get maxExtent => 60; // Высота Header
+  @override
+  double get minExtent => 60; // Высота Header
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
+    return false;
   }
 }

@@ -1,7 +1,11 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:mobile_abz/app/themes/app_colors.dart';
+import 'package:mobile_abz/presentation/widgets/Icons.dart';
+import 'package:mobile_abz/presentation/widgets/form_bottom_sheet.dart';
 import 'package:mobile_abz/presentation/widgets/layouts.dart';
-// import 'package:yandex_mapkit/yandex_mapkit.dart';
+import 'package:mobile_abz/presentation/widgets/ui/btn.dart';
 
 @RoutePage()
 class ContactsScreen extends StatelessWidget {
@@ -9,131 +13,185 @@ class ContactsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final mapObjects = <MapObject>[
-    //   PlacemarkMapObject(
-    //     mapId: const MapObjectId('placemark_1'),
-    //     point: const Point(latitude: 55.729274, longitude: 37.624875),
-    //     icon: PlacemarkIcon.single(
-    //       PlacemarkIconStyle(
-    //         image: BitmapDescriptor.fromAssetImage(
-    //           'assets/images/car_marker.png',
-    //         ),
-    //         scale: 2,
-    //       ),
-    //     ),
-    // ),
-    // ];
-
-    return Layouts(slivers: [
-      SliverToBoxAdapter(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Карта
-            // SizedBox(
-            //   height: 200,
-            //   child: YandexMap(
-            //     mapObjects: mapObjects,
-            //     onMapCreated: (controller) {
-            //       controller.moveCamera(
-            //         CameraUpdate.newCameraPosition(
-            //           const CameraPosition(
-            //             target: Point(latitude: 55.729274, longitude: 37.624875),
-            //             zoom: 16,
-            //           ),
-            //         ),
-            //       );
-            //     },
-            //   ),
-            // ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Адрес
-                  const Row(
-                    children: [
-                      Icon(Icons.location_on, color: Colors.purple),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          '5-ый Донской проезд, дом 19',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  // Кнопка "Проложить маршрут"
-                  OutlinedButton(
-                    onPressed: () {
-                      // Логика для маршрута
-                    },
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Colors.purple),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                    ),
-                    child: const Text(
-                      'Проложить маршрут',
-                      style: TextStyle(
-                        color: Colors.purple,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Divider(height: 1, thickness: 1),
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Телефон
-                  Row(
-                    children: [
-                      Icon(Icons.phone, color: Colors.black),
-                      SizedBox(width: 8),
-                      Text(
-                        '8 (495) 649-60-47',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 16),
-                  // WhatsApp
-                  Row(
-                    children: [
-                      // Icon(Icons.whatsapp, color: Colors.green),
-                      SizedBox(width: 8),
-                      Text(
-                        '8 (495) 649-60-47',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 16),
-                  // Telegram
-                  Row(
-                    children: [
-                      Icon(Icons.telegram, color: Colors.blue),
-                      SizedBox(width: 8),
-                      Text(
-                        '8 (495) 649-60-47',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+    return Layouts(
+      floatingActionButton: Container(
+        width: double.infinity,
+        margin: const EdgeInsets.symmetric(horizontal: 16), // Отступы по бокам
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color:
+                  AppColors.pink.withOpacity(0.5), // Цвет тени с прозрачностью
+              blurRadius: 11.6, // Радиус размытия
+              spreadRadius: 2, // Распространение тени
+              offset: const Offset(0, 4), // Смещение тени
             ),
           ],
         ),
-      )
-    ], currentIndex: 4);
+        child: ElevatedButton(
+          onPressed: () => FormBottomSheet.show(
+            context: context,
+            title: 'Свяжитесь с нами',
+            subtitle:
+                'Заполните форму, и мы свяжемся с вами в ближайшее время.',
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.purple,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 16),
+          ),
+          child: const Text(
+            'Заказать звонок',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+      currentIndex: 3,
+      slivers: [
+        SliverFillRemaining(
+            hasScrollBody: false,
+            child: Animate(
+              effects: const [FadeEffect()],
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Контакты',
+                            style: TextStyle(
+                                fontSize: 22, fontWeight: FontWeight.w500),
+                          ),
+                          const SizedBox(height: 15),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: Image.asset(
+                              'assets/images/map.png',
+                              height: 200,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          const Row(
+                            children: [
+                              IconWidget(
+                                iconName: 'marker',
+                                size: 16,
+                                color: AppColors.pink,
+                              ),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  '5-ый Донской проезд, дом 19',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Btn(
+                            onPressed: () => (),
+                            name: 'Проложить маршрут',
+                            borderColor: AppColors.pink,
+                            textColor: AppColors.pink,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Контакты
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 20),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(color: Colors.grey[300]!),
+                          bottom: BorderSide(color: Colors.grey[300]!),
+                        ),
+                      ),
+                      child: const ContactRow(
+                        icon: 'phone',
+                        color: AppColors.pink,
+                        text: '8 (495) 649-60-47',
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: const Row(
+                        children: [
+                          ContactRow(
+                            icon: 'wa',
+                            color: Colors.green,
+                            text: '8 (495) 649-60-47',
+                          ),
+                          SizedBox(width: 16),
+                          ContactRow(
+                            icon: 'tg',
+                            color: Colors.blue,
+                            text: '8 (495) 649-60-47',
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const Spacer(), // Растянуть на оставшееся пространство
+
+                    // Кнопка "Заказать звонок"
+                  ],
+                ),
+              ),
+            ))
+      ],
+    );
+  }
+}
+
+class ContactRow extends StatelessWidget {
+  final String icon;
+  final Color color;
+  final String text;
+
+  const ContactRow({
+    super.key,
+    required this.icon,
+    required this.color,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        IconWidget(iconName: icon, size: 16, color: color),
+        const SizedBox(width: 8),
+        Text(
+          text,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ],
+    );
   }
 }
