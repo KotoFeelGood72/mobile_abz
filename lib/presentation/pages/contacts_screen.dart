@@ -16,16 +16,15 @@ class ContactsScreen extends StatelessWidget {
     return Layouts(
       floatingActionButton: Container(
         width: double.infinity,
-        margin: const EdgeInsets.symmetric(horizontal: 16), // Отступы по бокам
+        margin: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color:
-                  AppColors.pink.withOpacity(0.5), // Цвет тени с прозрачностью
-              blurRadius: 11.6, // Радиус размытия
-              spreadRadius: 2, // Распространение тени
-              offset: const Offset(0, 4), // Смещение тени
+              color: AppColors.pink.withOpacity(0.5),
+              blurRadius: 11.6,
+              spreadRadius: 2,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -117,8 +116,6 @@ class ContactsScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-
-                    // Контакты
                     Container(
                       padding: const EdgeInsets.symmetric(
                           vertical: 10, horizontal: 20),
@@ -153,10 +150,7 @@ class ContactsScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-
-                    const Spacer(), // Растянуть на оставшееся пространство
-
-                    // Кнопка "Заказать звонок"
+                    const Spacer(),
                   ],
                 ),
               ),
