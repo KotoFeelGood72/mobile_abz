@@ -79,10 +79,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 FadeEffect(),
               ],
               child: Container(
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.circular(20),
-                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
