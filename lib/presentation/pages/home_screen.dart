@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:mobile_abz/app/repository/repository.dart';
 import 'package:mobile_abz/app/router/app_router.gr.dart';
 import 'package:mobile_abz/app/themes/app_colors.dart';
 import 'package:mobile_abz/presentation/widgets/Icons.dart';
@@ -20,51 +23,98 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final CarouselSliderController _controller = CarouselSliderController();
+
   int _currentIndex = 0;
+  final ApiRepository _repository = ApiRepository();
+  dynamic _sales = [];
+  dynamic _services = [];
+  dynamic _gallery = [];
+  List<dynamic> _reviews = [];
 
-  final List<Map<String, String>> services = [
-    {
-      'title': 'Защита пленкой',
-      'image': 'assets/images/sale.png',
-    },
-    {
-      'title': 'Антидождь',
-      'image': 'assets/images/sale.png',
-    },
-    {
-      'title': 'Антидождь',
-      'image': 'assets/images/sale.png',
-    },
-    {
-      'title': 'Полировка',
-      'image': 'assets/images/sale.png',
-    },
-    {
-      'title': 'Химчистка',
-      'image': 'assets/images/sale.png',
-    },
-  ];
+  double _averageRating = 0.0;
+  int _totalReviews = 0;
+  Map<int, int> _ratingDistribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
 
-  final galleryData = [
-    {
-      'items': [
-        {'image': 'assets/images/sale.png', 'title': 'Слайд 1'},
-        {'image': 'assets/images/sale.png', 'title': 'Слайд 1'},
-      ],
-    },
-    {
-      'items': [
-        {'image': 'assets/images/sale.png', 'title': 'Слайд 1'},
-        {'image': 'assets/images/sale.png', 'title': 'Слайд 1'},
-      ],
-    },
-    {
-      'items': [
-        {'image': 'assets/images/sale.png', 'title': 'Слайд 1'},
-        {'image': 'assets/images/sale.png', 'title': 'Слайд 1'},
-      ],
-    },
-  ];
+  String decodeUtf8(String text) {
+    return utf8.decode(text.runes.toList());
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchSales();
+    _fetchServices();
+    _fetchGallery();
+    _fetchReviews();
+  }
+
+  Future<void> _fetchSales() async {
+    try {
+      final data = await _repository.fetchData('stocks/all-stocks.json');
+      setState(() {
+        _sales = data;
+      });
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  Future<void> _fetchReviews() async {
+    try {
+      final data = await _repository.fetchData('reviews/all-reviews.json');
+      setState(() {
+        _reviews = data;
+        _calculateReviewStats(); // Вычисляем рейтинг
+      });
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  void _calculateReviewStats() {
+    if (_reviews.isEmpty) return;
+
+    double totalStars = 0;
+    int totalReviews = _reviews.length;
+    Map<int, int> ratingDistribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
+
+    for (var review in _reviews) {
+      final acf = review['acf'] ?? {};
+      int stars = int.tryParse(acf['stars'] ?? '0') ?? 0;
+      if (stars < 1 || stars > 5) continue;
+
+      totalStars += stars;
+      ratingDistribution[stars] = ratingDistribution[stars]! + 1;
+    }
+
+    setState(() {
+      _averageRating = totalStars / totalReviews;
+      _totalReviews = totalReviews;
+      _ratingDistribution = ratingDistribution;
+    });
+  }
+
+  Future<void> _fetchGallery() async {
+    try {
+      final data = await _repository.fetchData('gallery/all-gallery.json');
+      setState(() {
+        _gallery = data;
+      });
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  Future<void> _fetchServices() async {
+    try {
+      final data = await _repository.fetchData('services/all-services.json');
+      setState(() {
+        _services = data;
+      });
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +132,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SaleSlider(),
+                    if (_sales.isNotEmpty)
+                      SaleSlider(
+                          slides: List<Map<String, dynamic>>.from(_sales)),
                     Padding(
                       padding: const EdgeInsets.all(20),
                       child: Row(
@@ -130,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               const SizedBox(width: 8),
                               GestureDetector(
-                                onTap: _currentIndex < services.length - 1
+                                onTap: _currentIndex < _services.length - 1
                                     ? () {
                                         _controller.nextPage().then((_) {
                                           setState(() {
@@ -146,18 +198,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                   decoration: BoxDecoration(
                                     border: Border.all(
                                       width: 1,
-                                      color: _currentIndex < services.length - 1
-                                          ? AppColors.pink
-                                          : const Color(0xFFEDEDED),
+                                      color:
+                                          _currentIndex < _services.length - 1
+                                              ? AppColors.pink
+                                              : const Color(0xFFEDEDED),
                                     ),
-                                    color: _currentIndex < services.length - 1
+                                    color: _currentIndex < _services.length - 1
                                         ? AppColors.pink
                                         : AppColors.white,
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: IconWidget(
                                     iconName: 'arrow-right',
-                                    color: _currentIndex < services.length - 1
+                                    color: _currentIndex < _services.length - 1
                                         ? AppColors.white
                                         : AppColors.black,
                                   ),
@@ -168,73 +221,79 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                    CarouselSlider(
-                      items: services.map((service) {
-                        return Builder(
-                          builder: (BuildContext context) {
-                            return Container(
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 5.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
-                                color: Colors.white,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: const BorderRadius.all(
-                                      Radius.circular(16.0),
-                                    ),
-                                    child: Image.asset(
-                                      service['image']!,
-                                      height: 125,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: const BoxDecoration(
-                                      borderRadius: BorderRadius.vertical(
-                                        bottom: Radius.circular(16),
+                    if (_services.isNotEmpty)
+                      CarouselSlider(
+                        items: _services.map<Widget>((service) {
+                          return Builder(
+                            builder: (BuildContext context) {
+                              return Container(
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 5.0),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  color: Colors.white,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(16.0),
                                       ),
-                                      color: Colors.white,
+                                      child: Image.network(
+                                        service['acf']['img']!,
+                                        height: 125,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
-                                    child: Text(
-                                      service['title']!,
-                                      textAlign: TextAlign.center,
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: const BoxDecoration(
+                                        borderRadius: BorderRadius.vertical(
+                                          bottom: Radius.circular(16),
+                                        ),
+                                        color: Colors.white,
+                                      ),
+                                      child: Text(
+                                        decodeUtf8(service['title']!),
+                                        textAlign: TextAlign.center,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        }).toList(),
+                        carouselController: _controller,
+                        options: CarouselOptions(
+                          autoPlay: false,
+                          enableInfiniteScroll: false,
+                          viewportFraction: .45,
+                          aspectRatio: 2.0,
+                          initialPage: 0,
+                          padEnds: false,
+                          onPageChanged: (index, reason) {
+                            setState(() {
+                              _currentIndex = index;
+                            });
                           },
-                        );
-                      }).toList(),
-                      carouselController: _controller,
-                      options: CarouselOptions(
-                        autoPlay: false,
-                        enableInfiniteScroll: false,
-                        viewportFraction: .35,
-                        aspectRatio: 2.0,
-                        initialPage: 0,
-                        padEnds: false,
-                        onPageChanged: (index, reason) {
-                          setState(() {
-                            _currentIndex = index;
-                          });
-                        },
+                        ),
                       ),
-                    ),
-                    Gallery(galleryData: galleryData),
+                    if (_gallery.isNotEmpty)
+                      Gallery(
+                          galleryData:
+                              List<Map<String, dynamic>>.from(_gallery)),
                     ReviewsSummary(
-                      totalReviews: 176,
-                      rating: 4.9,
-                      totalRatings: 412,
+                      totalReviews: _totalReviews,
+                      rating: _averageRating,
+                      totalRatings: _totalReviews,
+                      ratingDistribution: _ratingDistribution,
                       onSeeAll: () {
                         AutoRouter.of(context).push(const ReviewsRoute());
                       },
-                    )
+                    ),
                   ],
                 ),
               ),

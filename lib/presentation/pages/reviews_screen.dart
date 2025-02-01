@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_abz/app/repository/repository.dart';
 import 'package:mobile_abz/app/router/app_router.gr.dart';
 import 'package:mobile_abz/app/themes/app_colors.dart';
 import 'package:mobile_abz/presentation/widgets/card/reviews_card.dart';
@@ -7,41 +9,65 @@ import 'package:mobile_abz/presentation/widgets/layouts.dart';
 import 'package:mobile_abz/presentation/widgets/reviews_summary.dart';
 
 @RoutePage()
-class ReviewsScreen extends StatelessWidget {
+class ReviewsScreen extends StatefulWidget {
   const ReviewsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Массив отзывов
-    final List<Map<String, dynamic>> reviews = [
-      {
-        "name": "Seva Che",
-        "level": "Знаток города 14 уровня",
-        "reviewText":
-            "Невероятно классный сервис, все делают очень профессионально, аккуратно и внимательно. Сбалансированные цены...",
-        "date": "25 августа 2024",
-        "stars": 5,
-        "profileImage": "assets/images/sale.png",
-        "gallery": [
-          "assets/images/sale.png",
-          "assets/images/sale.png",
-        ],
-      },
-      {
-        "name": "Алёна S",
-        "level": "Знаток города 14 уровня",
-        "reviewText":
-            "Отличное место и отличные ребята. Очень нравится обслуживание, все на высоте и без пафоса! Любые вопросы...",
-        "date": "25 августа 2024",
-        "stars": 5,
-        "profileImage": "assets/images/sale.png",
-        "gallery": [
-          "assets/images/sale.png",
-        ],
-      },
-      // Добавьте больше отзывов при необходимости
-    ];
+  State<ReviewsScreen> createState() => _ReviewsScreenState();
+}
 
+class _ReviewsScreenState extends State<ReviewsScreen> {
+  final ApiRepository _repository = ApiRepository();
+  List<dynamic> _reviews = [];
+
+  double _averageRating = 0.0;
+  int _totalReviews = 0;
+  Map<int, int> _ratingDistribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchReviews();
+  }
+
+  Future<void> _fetchReviews() async {
+    try {
+      final data = await _repository.fetchData('reviews/all-reviews.json');
+      setState(() {
+        _reviews = data;
+        _calculateReviewStats(); // Вычисляем рейтинг
+      });
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  /// 📌 Метод для расчета среднего рейтинга и распределения звезд
+  void _calculateReviewStats() {
+    if (_reviews.isEmpty) return;
+
+    double totalStars = 0;
+    int totalReviews = _reviews.length;
+    Map<int, int> ratingDistribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
+
+    for (var review in _reviews) {
+      final acf = review['acf'] ?? {};
+      int stars = int.tryParse(acf['stars'] ?? '0') ?? 0;
+      if (stars < 1 || stars > 5) continue; // Игнорируем некорректные данные
+
+      totalStars += stars;
+      ratingDistribution[stars] = ratingDistribution[stars]! + 1;
+    }
+
+    setState(() {
+      _averageRating = totalStars / totalReviews;
+      _totalReviews = totalReviews;
+      _ratingDistribution = ratingDistribution;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Layouts(currentIndex: 3, slivers: [
       SliverToBoxAdapter(
         child: Container(
@@ -51,10 +77,12 @@ class ReviewsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              /// 🏆 Теперь `ReviewsSummary` получает реальные данные
               ReviewsSummary(
-                totalReviews: reviews.length,
-                rating: 4.9,
-                totalRatings: 412,
+                totalReviews: _totalReviews,
+                rating: _averageRating,
+                totalRatings: _totalReviews,
+                ratingDistribution: _ratingDistribution,
                 onBack: () {
                   Navigator.of(context).pop();
                 },
@@ -65,7 +93,7 @@ class ReviewsScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.only(left: 20, top: 10, bottom: 10),
                 child: Text(
-                  '${reviews.length} отзывов',
+                  '$_totalReviews отзывов',
                   style: const TextStyle(
                       fontSize: 22, fontWeight: FontWeight.w600),
                 ),
@@ -73,17 +101,27 @@ class ReviewsScreen extends StatelessWidget {
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: reviews.length,
+                itemCount: _reviews.length,
                 itemBuilder: (context, index) {
-                  final review = reviews[index];
+                  final review = _reviews[index];
+
+                  // Достаем данные из "acf"
+                  final acf = review['acf'] ?? {};
+                  final name = acf['name'] ?? 'Аноним';
+                  final level = acf['level'] ?? 'Без уровня';
+                  final reviewText = acf['review'] ?? 'Без отзыва';
+                  final date = acf['date'] ?? '';
+                  final stars = int.tryParse(acf['stars'] ?? '0') ?? 0;
+                  final profileImage = (acf['img'] is String) ? acf['img'] : "";
+
                   return ReviewsCard(
-                    name: review['name'],
-                    level: review['level'],
-                    reviewText: review['reviewText'],
-                    date: review['date'],
-                    stars: review['stars'],
-                    profileImage: review['profileImage'],
-                    gallery: List<String>.from(review['gallery']),
+                    name: name,
+                    level: level,
+                    reviewText: reviewText,
+                    date: date,
+                    stars: stars,
+                    profileImage: profileImage.isNotEmpty ? profileImage : "",
+                    gallery: [],
                   );
                 },
               ),

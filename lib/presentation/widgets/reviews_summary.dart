@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_abz/presentation/widgets/Icons.dart';
-import 'package:mobile_abz/presentation/widgets/card/reviews_card.dart';
 import 'package:mobile_abz/presentation/widgets/ui/btn.dart';
 
 class ReviewsSummary extends StatelessWidget {
   final int totalReviews;
   final double rating;
   final int totalRatings;
+  final Map<int, int>
+      ratingDistribution; // ✅ Добавили параметр для количества звезд
   final VoidCallback onSeeAll;
-  final VoidCallback? onBack; // Необязательный параметр
+  final VoidCallback? onBack;
 
   const ReviewsSummary({
     super.key,
     required this.totalReviews,
     required this.rating,
     required this.totalRatings,
+    required this.ratingDistribution, // ✅ Добавляем в конструктор
     required this.onSeeAll,
-    this.onBack, // Добавили onBack как необязательный
+    this.onBack,
   });
 
   @override
@@ -44,6 +46,8 @@ class ReviewsSummary extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
+
+          /// 🎯 **Общий рейтинг**
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
             decoration: BoxDecoration(
@@ -52,7 +56,7 @@ class ReviewsSummary extends StatelessWidget {
             ),
             child: Row(
               children: [
-                // Рейтинг
+                // Средний рейтинг
                 Text(rating.toStringAsFixed(1),
                     style: const TextStyle(
                         fontSize: 48,
@@ -87,6 +91,9 @@ class ReviewsSummary extends StatelessWidget {
               ],
             ),
           ),
+
+          const SizedBox(height: 16),
+
           const SizedBox(height: 16),
           if (onBack == null)
             Center(

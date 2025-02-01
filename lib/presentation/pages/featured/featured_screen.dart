@@ -1,35 +1,55 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:mobile_abz/app/repository/repository.dart';
 import 'package:mobile_abz/app/router/app_router.gr.dart';
 import 'package:mobile_abz/presentation/widgets/featured_card.dart';
 import 'package:mobile_abz/presentation/widgets/layouts.dart';
 
 @RoutePage()
-@RoutePage()
-class FeaturedScreen extends StatelessWidget {
+class FeaturedScreen extends StatefulWidget {
   const FeaturedScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final List<Map<String, String>> recommendations = [
-      {
-        'title': 'Как подготовить свой автомобиль к зиме?',
-        'image': 'assets/images/sale.png',
-        'id': '1',
-      },
-      {
-        'title': 'Советы по уходу за автомобилем летом',
-        'image': 'assets/images/sale.png',
-        'id': '2',
-      },
-      {
-        'title': 'Как выбрать надежные шины?',
-        'image': 'assets/images/sale.png',
-        'id': '3',
-      },
-    ];
+  State<FeaturedScreen> createState() => _FeaturedScreenState();
+}
 
+class _FeaturedScreenState extends State<FeaturedScreen> {
+  final ApiRepository _repository = ApiRepository();
+  List<Map<String, String>> _featureds = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchFeatured();
+  }
+
+  /// 📌 Загружаем рекомендации из API
+  Future<void> _fetchFeatured() async {
+    try {
+      final data = await _repository
+          .fetchData('recommendations/all-recommendations.json');
+      setState(() {
+        _featureds = _extractRecommendations(data);
+      });
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  List<Map<String, String>> _extractRecommendations(List<dynamic> data) {
+    return data.map<Map<String, String>>((item) {
+      final acf = item['acf'] ?? {};
+      return {
+        'title': (acf['description'] ?? 'Без описания').toString(),
+        'image': (acf['img'] ?? 'assets/images/default.jpg').toString(),
+        'id': item['id'].toString(),
+      };
+    }).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Layouts(currentIndex: 1, slivers: [
       SliverToBoxAdapter(
           child: Animate(
@@ -46,22 +66,24 @@ class FeaturedScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
+
+            /// 📌 Отображаем рекомендации
             ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true, // Добавляем для ограничения высоты
+              shrinkWrap: true,
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: recommendations.length,
+              itemCount: _featureds.length,
               itemBuilder: (context, index) {
-                final recommendation = recommendations[index];
+                final recommendation = _featureds[index];
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16),
                   child: FeaturedCard(
-                      title: recommendation['title']!,
-                      image: recommendation['image']!,
-                      onTap: () => {
-                            AutoRouter.of(context).push(
-                                FeaturedIdRoute(id: recommendation['id']!)),
-                          }),
+                    title: recommendation['title']!,
+                    image: recommendation['image']!,
+                    onTap: () => AutoRouter.of(context).push(
+                      FeaturedIdRoute(id: recommendation['id']!),
+                    ),
+                  ),
                 );
               },
             ),

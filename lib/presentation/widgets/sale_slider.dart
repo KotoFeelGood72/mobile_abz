@@ -1,9 +1,11 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_abz/app/themes/app_colors.dart';
+import 'dart:convert';
 
 class SaleSlider extends StatefulWidget {
-  const SaleSlider({super.key});
+  final List<Map<String, dynamic>> slides;
+  const SaleSlider({super.key, required this.slides});
 
   @override
   State<SaleSlider> createState() => _SaleSliderState();
@@ -12,26 +14,9 @@ class SaleSlider extends StatefulWidget {
 class _SaleSliderState extends State<SaleSlider> {
   int _currentPage = 0;
 
-  final mockSlides = [
-    {
-      "id": "1",
-      "img": "assets/images/sale.png",
-      "link": "/promo1",
-      "title": "Ваша любимая акция!",
-    },
-    {
-      "id": "2",
-      "img": "assets/images/sale.png",
-      "link": "/promo2",
-      "title": "Супер предложение!",
-    },
-    {
-      "id": "3",
-      "img": "assets/images/sale.png",
-      "link": "/promo3",
-      "title": "Не пропустите скидки!",
-    },
-  ];
+  String decodeUtf8(String text) {
+    return utf8.decode(text.runes.toList());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +35,7 @@ class _SaleSliderState extends State<SaleSlider> {
             height: 15,
           ),
           CarouselSlider(
-            items: mockSlides.map((slide) {
+            items: widget.slides.map((slide) {
               return Builder(
                 builder: (BuildContext context) {
                   return Container(
@@ -59,8 +44,8 @@ class _SaleSliderState extends State<SaleSlider> {
                       child: Stack(
                         fit: StackFit.expand,
                         children: [
-                          Image.asset(
-                            slide['img']!,
+                          Image.network(
+                            slide['acf']['img']!,
                             fit: BoxFit.cover,
                           ),
                           Positioned(
@@ -71,7 +56,7 @@ class _SaleSliderState extends State<SaleSlider> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  slide['title']!,
+                                  decodeUtf8(slide['title'] ?? ''),
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 18,
@@ -81,7 +66,8 @@ class _SaleSliderState extends State<SaleSlider> {
                                 const SizedBox(height: 8),
                                 ElevatedButton(
                                   onPressed: () {
-                                    // Navigator.pushNamed(context, slide['link']!);
+                                    // Navigator.pushNamed(
+                                    //     context, slide['id'].toString()!);
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor:
@@ -122,7 +108,7 @@ class _SaleSliderState extends State<SaleSlider> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
-              mockSlides.length,
+              widget.slides.length,
               (index) => AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 margin: const EdgeInsets.symmetric(horizontal: 5.0),

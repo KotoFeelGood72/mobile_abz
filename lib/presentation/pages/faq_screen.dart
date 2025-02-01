@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:mobile_abz/app/repository/repository.dart';
 import 'package:mobile_abz/app/themes/app_colors.dart';
 import 'package:mobile_abz/presentation/widgets/form_bottom_sheet.dart';
 import 'package:mobile_abz/presentation/widgets/layouts.dart';
@@ -15,46 +18,47 @@ class FaqScreen extends StatefulWidget {
 }
 
 class _FaqScreenState extends State<FaqScreen> {
-  int? _expandedIndex; // Индекс текущего раскрытого элемента
+  int? _expandedIndex;
+  final ApiRepository _repository = ApiRepository();
+  List<Map<String, String>> _faqs = [];
 
-  final List<Map<String, String>> faqItems = [
-    {
-      'question': 'Сколько будет стоить антигравийная пленка на машину?',
-      'answer': 'Цена зависит от марки автомобиля и выбранной пленки.',
-    },
-    {
-      'question': 'Какой пленкой вы оклеиваете?',
-      'answer':
-          'Мы используем только сертифицированные пленки высокого качества.',
-    },
-    {
-      'question': 'На сколько нужно оставлять машину?',
-      'answer': 'В среднем процесс занимает от 1 до 2 дней.',
-    },
-    {
-      'question': 'У вас есть гарантия?',
-      'answer': 'Да, мы предоставляем гарантию на все выполненные работы.',
-    },
-    {
-      'question': 'Сколько будет стоить забронировать стекло?',
-      'answer': 'Цена варьируется в зависимости от типа стекла и автомобиля.',
-    },
-    {
-      'question': 'Почему так дорого? Нашел гораздо дешевле!',
-      'answer':
-          'Мы предоставляем высокое качество работ и долговечность результата.',
-    },
-    {
-      'question': 'Заклеить фары пленкой?',
-      'answer':
-          'Да, мы защищаем фары полиуретановой антигравийной пленкой. Это помогает предотвратить преждевременное старение пластика и образование на нем механических повреждений.',
-    },
-  ];
+  Future<void> _fetchFaqs() async {
+    try {
+      final data = await _repository.fetchData('/acf-options.json');
+
+      if (data != null && data.containsKey('faq')) {
+        setState(() {
+          _faqs = List<Map<String, String>>.from(
+            (data['faq'] as List).map(
+              (item) => {
+                "question":
+                    utf8.decode(item["questions"].toString().runes.toList()) ??
+                        "Без вопроса",
+                "answer":
+                    utf8.decode(item["response"].toString().runes.toList()) ??
+                        "Без ответа",
+              },
+            ),
+          );
+        });
+      } else {
+        print("Ошибка: В JSON нет ключа 'faq'");
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
 
   void _toggleExpansion(int index) {
     setState(() {
       _expandedIndex = (_expandedIndex == index) ? null : index; // Переключение
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchFaqs();
   }
 
   @override
@@ -125,11 +129,11 @@ class _FaqScreenState extends State<FaqScreen> {
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: faqItems.length,
+                  itemCount: _faqs.length,
                   itemBuilder: (context, index) {
                     return CustomFaqItem(
-                      question: faqItems[index]['question']!,
-                      answer: faqItems[index]['answer']!,
+                      question: _faqs[index]['question']!,
+                      answer: _faqs[index]['answer']!,
                       isExpanded: _expandedIndex == index,
                       onToggle: () => _toggleExpansion(index),
                     );
@@ -170,7 +174,7 @@ class _CustomFaqItemState extends State<CustomFaqItem>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 400),
       vsync: this,
     );
   }

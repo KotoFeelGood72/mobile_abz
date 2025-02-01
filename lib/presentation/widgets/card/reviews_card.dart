@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:mobile_abz/app/themes/app_colors.dart';
 
@@ -21,6 +23,10 @@ class ReviewsCard extends StatelessWidget {
     this.gallery = const [], // Галерея опциональна
   });
 
+  String decodeUtf8(String text) {
+    return utf8.decode(text.runes.toList());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -35,7 +41,7 @@ class ReviewsCard extends StatelessWidget {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundImage: AssetImage(profileImage),
+                  backgroundImage: NetworkImage(profileImage),
                   radius: 24,
                 ),
                 const SizedBox(width: 12),
@@ -43,10 +49,11 @@ class ReviewsCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      name,
+                      decodeUtf8(name),
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                    Text(level, style: const TextStyle(fontSize: 12)),
+                    Text(decodeUtf8(level),
+                        style: const TextStyle(fontSize: 12)),
                   ],
                 ),
               ],
@@ -66,7 +73,7 @@ class ReviewsCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  date,
+                  decodeUtf8(date),
                   style: Theme.of(context)
                       .textTheme
                       .bodyMedium
@@ -76,7 +83,7 @@ class ReviewsCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              reviewText,
+              decodeUtf8(reviewText),
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 12),
@@ -91,7 +98,7 @@ class ReviewsCard extends StatelessWidget {
                   itemBuilder: (context, index) {
                     return ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.asset(
+                      child: Image.network(
                         gallery[index],
                         height: 100,
                         width: 100,

@@ -33,8 +33,8 @@ class _ImageSliderState extends State<ImageSlider> {
                 final item = widget.items[index];
                 return ClipRRect(
                   borderRadius: BorderRadius.circular(16),
-                  child: Image.asset(
-                    item['image']!,
+                  child: Image.network(
+                    item['img']!,
                     width: double.infinity,
                     height: widget.height,
                     fit: BoxFit.cover,

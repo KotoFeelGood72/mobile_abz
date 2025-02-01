@@ -1,15 +1,48 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:mobile_abz/app/repository/repository.dart';
 import 'package:mobile_abz/app/themes/app_colors.dart';
 import 'package:mobile_abz/presentation/widgets/Icons.dart';
 import 'package:mobile_abz/presentation/widgets/form_bottom_sheet.dart';
 import 'package:mobile_abz/presentation/widgets/layouts.dart';
 import 'package:mobile_abz/presentation/widgets/ui/btn.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 @RoutePage()
-class ContactsScreen extends StatelessWidget {
+class ContactsScreen extends StatefulWidget {
   const ContactsScreen({super.key});
+
+  @override
+  State<ContactsScreen> createState() => _ContactsScreenState();
+}
+
+class _ContactsScreenState extends State<ContactsScreen> {
+  final ApiRepository _repository = ApiRepository();
+
+  Map<String, dynamic>? _contacts; // Исправлено: сделал явный тип Map
+
+  Future<void> _fetchContacts() async {
+    try {
+      final data = await _repository.fetchData('acf-options.json');
+
+      if (data != null) {
+        setState(() {
+          _contacts = Map<String, dynamic>.from(data)..remove('faq');
+        });
+      } else {
+        print("Ошибка: JSON пуст");
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchContacts();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +121,7 @@ class ContactsScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          const Row(
+                          Row(
                             children: [
                               IconWidget(
                                 iconName: 'marker',
@@ -98,7 +131,7 @@ class ContactsScreen extends StatelessWidget {
                               SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  '5-ый Донской проезд, дом 19',
+                                  '5-ый Донской проезд, дом 19 ',
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500),
@@ -108,7 +141,9 @@ class ContactsScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           Btn(
-                            onPressed: () => (),
+                            onPressed: () {
+                              launchUrl(Uri.parse(_contacts!['link_to_map']));
+                            },
                             name: 'Проложить маршрут',
                             borderColor: AppColors.pink,
                             textColor: AppColors.pink,
@@ -125,28 +160,34 @@ class ContactsScreen extends StatelessWidget {
                           bottom: BorderSide(color: Colors.grey[300]!),
                         ),
                       ),
-                      child: const ContactRow(
+                      child: ContactRow(
                         icon: 'phone',
                         color: AppColors.pink,
-                        text: '8 (495) 649-60-47',
+                        text: _contacts?['phone'] ??
+                            'Телефон не указан', // Защита от null
                       ),
                     ),
                     const SizedBox(height: 16),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: const Row(
+                      child: Row(
                         children: [
-                          ContactRow(
-                            icon: 'wa',
-                            color: Colors.green,
-                            text: '8 (495) 649-60-47',
-                          ),
-                          SizedBox(width: 16),
-                          ContactRow(
-                            icon: 'tg',
-                            color: Colors.blue,
-                            text: '8 (495) 649-60-47',
-                          ),
+                          if (_contacts?['whatsapp'] !=
+                              null) // Проверка на null
+                            ContactRow(
+                              icon: 'wa',
+                              color: Colors.green,
+                              text: _contacts!['whatsapp'],
+                            ),
+                          if (_contacts?['telegram'] !=
+                              null) // Проверка на null
+                            SizedBox(width: 16),
+                          if (_contacts?['telegram'] != null)
+                            ContactRow(
+                              icon: 'tg',
+                              color: Colors.blue,
+                              text: _contacts!['telegram'],
+                            ),
                         ],
                       ),
                     ),

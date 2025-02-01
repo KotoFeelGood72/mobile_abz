@@ -6,6 +6,7 @@ import 'package:mobile_abz/app/themes/app_colors.dart';
 import 'package:mobile_abz/app/themes/text_themes.dart';
 import 'firebase_options.dart';
 import 'package:get_it/get_it.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final getIt = GetIt.instance;
 
@@ -15,7 +16,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
+  await dotenv.load(fileName: 'assets/.env');
   runApp(
     const ProviderScope(observers: [], child: ABZAuto()),
   );
