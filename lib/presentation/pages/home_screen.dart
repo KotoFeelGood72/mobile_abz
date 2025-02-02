@@ -35,10 +35,6 @@ class _HomeScreenState extends State<HomeScreen> {
   int _totalReviews = 0;
   Map<int, int> _ratingDistribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
 
-  String decodeUtf8(String text) {
-    return utf8.decode(text.runes.toList());
-  }
-
   @override
   void initState() {
     super.initState();
@@ -226,41 +222,46 @@ class _HomeScreenState extends State<HomeScreen> {
                         items: _services.map<Widget>((service) {
                           return Builder(
                             builder: (BuildContext context) {
-                              return Container(
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 5.0),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(16),
-                                  color: Colors.white,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: const BorderRadius.all(
-                                        Radius.circular(16.0),
-                                      ),
-                                      child: Image.network(
-                                        service['acf']['img']!,
-                                        height: 125,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                    Container(
-                                      padding: const EdgeInsets.all(8),
-                                      decoration: const BoxDecoration(
-                                        borderRadius: BorderRadius.vertical(
-                                          bottom: Radius.circular(16),
+                              return GestureDetector(
+                                onTap: () => AutoRouter.of(context).push(
+                                    ServicesIdRoute(
+                                        id: service['id'].toString())),
+                                child: Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 5.0),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(16),
+                                    color: Colors.white,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: const BorderRadius.all(
+                                          Radius.circular(16.0),
                                         ),
-                                        color: Colors.white,
+                                        child: Image.network(
+                                          service['acf']['img']!,
+                                          height: 125,
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
-                                      child: Text(
-                                        decodeUtf8(service['title']!),
-                                        textAlign: TextAlign.center,
+                                      Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: const BoxDecoration(
+                                          borderRadius: BorderRadius.vertical(
+                                            bottom: Radius.circular(16),
+                                          ),
+                                          color: Colors.white,
+                                        ),
+                                        child: Text(
+                                          service['title']!,
+                                          textAlign: TextAlign.center,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               );
                             },
@@ -270,7 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         options: CarouselOptions(
                           autoPlay: false,
                           enableInfiniteScroll: false,
-                          viewportFraction: .45,
+                          viewportFraction: .5,
                           aspectRatio: 2.0,
                           initialPage: 0,
                           padEnds: false,

@@ -23,10 +23,6 @@ class ReviewsCard extends StatelessWidget {
     this.gallery = const [], // Галерея опциональна
   });
 
-  String decodeUtf8(String text) {
-    return utf8.decode(text.runes.toList());
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -49,11 +45,10 @@ class ReviewsCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      decodeUtf8(name),
+                      name,
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                    Text(decodeUtf8(level),
-                        style: const TextStyle(fontSize: 12)),
+                    Text(level, style: const TextStyle(fontSize: 12)),
                   ],
                 ),
               ],
@@ -73,7 +68,7 @@ class ReviewsCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  decodeUtf8(date),
+                  date,
                   style: Theme.of(context)
                       .textTheme
                       .bodyMedium
@@ -83,7 +78,7 @@ class ReviewsCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              decodeUtf8(reviewText),
+              reviewText,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 12),

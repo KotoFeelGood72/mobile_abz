@@ -14,11 +14,6 @@ class FeaturedCard extends StatelessWidget {
     required this.onTap,
   });
 
-  /// 📌 Декодируем текст в UTF-8
-  String decodeUtf8(String text) {
-    return utf8.decode(text.runes.toList());
-  }
-
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -28,11 +23,11 @@ class FeaturedCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              child: Image.network(image),
               borderRadius: BorderRadius.circular(20),
+              child: Image.network(image),
             ),
             Html(
-              data: decodeUtf8(title),
+              data: title,
               style: {
                 "p": Style(
                   color: Colors.black87,

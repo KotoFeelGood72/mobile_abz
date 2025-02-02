@@ -1,7 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_abz/app/themes/app_colors.dart';
-import 'dart:convert';
 
 class SaleSlider extends StatefulWidget {
   final List<Map<String, dynamic>> slides;
@@ -13,10 +12,6 @@ class SaleSlider extends StatefulWidget {
 
 class _SaleSliderState extends State<SaleSlider> {
   int _currentPage = 0;
-
-  String decodeUtf8(String text) {
-    return utf8.decode(text.runes.toList());
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +51,7 @@ class _SaleSliderState extends State<SaleSlider> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  decodeUtf8(slide['title'] ?? ''),
+                                  (slide['title'] ?? ''),
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 18,

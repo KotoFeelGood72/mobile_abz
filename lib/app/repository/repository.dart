@@ -11,7 +11,9 @@ class ApiRepository {
     final response = await http.get(Uri.parse('$baseUrl/$endpoint'));
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      // Декодируем как UTF-8
+      final decodedJson = utf8.decode(response.bodyBytes);
+      return jsonDecode(decodedJson);
     } else {
       throw Exception('Failed to load data');
     }
@@ -21,12 +23,14 @@ class ApiRepository {
   Future<dynamic> postData(String endpoint, Map<String, dynamic> data) async {
     final response = await http.post(
       Uri.parse('$baseUrl/$endpoint'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json; charset=UTF-8'},
       body: jsonEncode(data),
     );
 
     if (response.statusCode == 201) {
-      return jsonDecode(response.body);
+      // Декодируем как UTF-8
+      final decodedJson = utf8.decode(response.bodyBytes);
+      return jsonDecode(decodedJson);
     } else {
       throw Exception('Failed to post data');
     }

@@ -20,8 +20,6 @@ class Layouts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: AppColors.black,
-
       body: SafeArea(
         bottom: true,
         top: true,
@@ -31,8 +29,8 @@ class Layouts extends StatelessWidget {
             slivers: [
               if (sliverAppBar != null) sliverAppBar!,
               SliverPersistentHeader(
-                pinned: true, // Закрепить Header
-                floating: false, // Убираем плавающее поведение
+                pinned: false,
+                floating: false,
                 delegate: _FixedHeaderDelegate(
                   child: const Header(),
                 ),

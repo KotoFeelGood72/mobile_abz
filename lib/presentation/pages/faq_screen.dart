@@ -31,12 +31,10 @@ class _FaqScreenState extends State<FaqScreen> {
           _faqs = List<Map<String, String>>.from(
             (data['faq'] as List).map(
               (item) => {
-                "question":
-                    utf8.decode(item["questions"].toString().runes.toList()) ??
-                        "Без вопроса",
+                "question": item["questions"].toString().runes.toList() ??
+                    "Без вопроса",
                 "answer":
-                    utf8.decode(item["response"].toString().runes.toList()) ??
-                        "Без ответа",
+                    item["response"].toString().runes.toList() ?? "Без ответа",
               },
             ),
           );
