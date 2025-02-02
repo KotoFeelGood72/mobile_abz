@@ -35,13 +35,27 @@ class _HomeScreenState extends State<HomeScreen> {
   int _totalReviews = 0;
   Map<int, int> _ratingDistribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
 
+  bool _isLoading = true; // Флаг загрузки
+
   @override
   void initState() {
     super.initState();
-    _fetchSales();
-    _fetchServices();
-    _fetchGallery();
-    _fetchReviews();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    try {
+      await Future.wait([
+        _fetchSales(),
+        _fetchServices(),
+        _fetchGallery(),
+        _fetchReviews(),
+      ]);
+    } finally {
+      setState(() {
+        _isLoading = false; // Отключаем лоадер после загрузки данных
+      });
+    }
   }
 
   Future<void> _fetchSales() async {
@@ -60,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final data = await _repository.fetchData('reviews/all-reviews.json');
       setState(() {
         _reviews = data;
-        _calculateReviewStats(); // Вычисляем рейтинг
+        _calculateReviewStats();
       });
     } catch (e) {
       print('Error: $e');
@@ -116,6 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Animate(
       child: Layouts(
+        isLoading: _isLoading, // Передаем актуальное состояние загрузки
         currentIndex: 0,
         slivers: [
           SliverToBoxAdapter(

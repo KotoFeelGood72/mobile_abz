@@ -21,6 +21,7 @@ class _FaqScreenState extends State<FaqScreen> {
   int? _expandedIndex;
   final ApiRepository _repository = ApiRepository();
   List<Map<String, String>> _faqs = [];
+  bool _isLoading = true; // Флаг загрузки
 
   Future<void> _fetchFaqs() async {
     try {
@@ -31,10 +32,8 @@ class _FaqScreenState extends State<FaqScreen> {
           _faqs = List<Map<String, String>>.from(
             (data['faq'] as List).map(
               (item) => {
-                "question": item["questions"].toString().runes.toList() ??
-                    "Без вопроса",
-                "answer":
-                    item["response"].toString().runes.toList() ?? "Без ответа",
+                "question": item["questions"].toString(),
+                "answer": item["response"].toString(),
               },
             ),
           );
@@ -44,12 +43,16 @@ class _FaqScreenState extends State<FaqScreen> {
       }
     } catch (e) {
       print('Error: $e');
+    } finally {
+      setState(() {
+        _isLoading = false; // Отключаем лоадер после загрузки данных
+      });
     }
   }
 
   void _toggleExpansion(int index) {
     setState(() {
-      _expandedIndex = (_expandedIndex == index) ? null : index; // Переключение
+      _expandedIndex = (_expandedIndex == index) ? null : index;
     });
   }
 
@@ -62,21 +65,20 @@ class _FaqScreenState extends State<FaqScreen> {
   @override
   Widget build(BuildContext context) {
     return Layouts(
+      isLoading: _isLoading, // Передаем флаг загрузки
       floatingActionButton: Align(
         alignment: Alignment.bottomCenter,
         child: Container(
           width: double.infinity,
-          margin:
-              const EdgeInsets.symmetric(horizontal: 16), // Отступы по бокам
+          margin: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: AppColors.pink
-                    .withOpacity(0.5), // Цвет тени с прозрачностью
-                blurRadius: 11.6, // Радиус размытия
-                spreadRadius: 2, // Распространение тени
-                offset: const Offset(0, 4), // Смещение тени
+                color: AppColors.pink.withOpacity(0.5),
+                blurRadius: 11.6,
+                spreadRadius: 2,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
@@ -108,39 +110,40 @@ class _FaqScreenState extends State<FaqScreen> {
       currentIndex: 2,
       slivers: [
         SliverToBoxAdapter(
-            child: Animate(
-          effects: const [FadeEffect()],
-          child: Container(
-            padding:
-                const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 80),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Часто задаваемые вопросы',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600,
+          child: Animate(
+            effects: const [FadeEffect()],
+            child: Container(
+              padding: const EdgeInsets.only(
+                  top: 20, left: 20, right: 20, bottom: 80),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Часто задаваемые вопросы',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: _faqs.length,
-                  itemBuilder: (context, index) {
-                    return CustomFaqItem(
-                      question: _faqs[index]['question']!,
-                      answer: _faqs[index]['answer']!,
-                      isExpanded: _expandedIndex == index,
-                      onToggle: () => _toggleExpansion(index),
-                    );
-                  },
-                ),
-              ],
+                  const SizedBox(height: 20),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: _faqs.length,
+                    itemBuilder: (context, index) {
+                      return CustomFaqItem(
+                        question: _faqs[index]['question']!,
+                        answer: _faqs[index]['answer']!,
+                        isExpanded: _expandedIndex == index,
+                        onToggle: () => _toggleExpansion(index),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
-        )),
+        ),
       ],
     );
   }

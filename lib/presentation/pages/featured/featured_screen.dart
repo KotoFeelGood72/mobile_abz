@@ -17,6 +17,7 @@ class FeaturedScreen extends StatefulWidget {
 class _FeaturedScreenState extends State<FeaturedScreen> {
   final ApiRepository _repository = ApiRepository();
   List<Map<String, String>> _featureds = [];
+  bool _isLoading = true; // Флаг загрузки
 
   @override
   void initState() {
@@ -34,6 +35,10 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
       });
     } catch (e) {
       print('Error: $e');
+    } finally {
+      setState(() {
+        _isLoading = false; // Отключаем лоадер после загрузки данных
+      });
     }
   }
 
@@ -50,46 +55,51 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Layouts(currentIndex: 1, slivers: [
-      SliverToBoxAdapter(
+    return Layouts(
+      isLoading: _isLoading, // Передаем состояние загрузки
+      currentIndex: 1,
+      slivers: [
+        SliverToBoxAdapter(
           child: Animate(
-        effects: const [FadeEffect()],
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'Рекомендации',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            /// 📌 Отображаем рекомендации
-            ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: _featureds.length,
-              itemBuilder: (context, index) {
-                final recommendation = _featureds[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: FeaturedCard(
-                    title: recommendation['title']!,
-                    image: recommendation['image']!,
-                    onTap: () => AutoRouter.of(context).push(
-                      FeaturedIdRoute(id: recommendation['id']!),
-                    ),
+            effects: const [FadeEffect()],
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    'Рекомендации',
+                    style: Theme.of(context).textTheme.headlineMedium,
                   ),
-                );
-              },
+                ),
+                const SizedBox(height: 16),
+
+                /// 📌 Отображаем рекомендации
+                ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: _featureds.length,
+                  itemBuilder: (context, index) {
+                    final recommendation = _featureds[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: FeaturedCard(
+                        title: recommendation['title']!,
+                        image: recommendation['image']!,
+                        onTap: () => AutoRouter.of(context).push(
+                          FeaturedIdRoute(id: recommendation['id']!),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-      )),
-    ]);
+      ],
+    );
   }
 }

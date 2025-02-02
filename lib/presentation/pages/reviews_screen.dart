@@ -24,6 +24,8 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   int _totalReviews = 0;
   Map<int, int> _ratingDistribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
 
+  bool _isLoading = true; // Флаг загрузки
+
   @override
   void initState() {
     super.initState();
@@ -35,10 +37,14 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
       final data = await _repository.fetchData('reviews/all-reviews.json');
       setState(() {
         _reviews = data;
-        _calculateReviewStats(); // Вычисляем рейтинг
+        _calculateReviewStats();
       });
     } catch (e) {
       print('Error: $e');
+    } finally {
+      setState(() {
+        _isLoading = false; // Отключаем лоадер после загрузки данных
+      });
     }
   }
 
@@ -53,7 +59,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
     for (var review in _reviews) {
       final acf = review['acf'] ?? {};
       int stars = int.tryParse(acf['stars'] ?? '0') ?? 0;
-      if (stars < 1 || stars > 5) continue; // Игнорируем некорректные данные
+      if (stars < 1 || stars > 5) continue;
 
       totalStars += stars;
       ratingDistribution[stars] = ratingDistribution[stars]! + 1;
@@ -68,67 +74,71 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Layouts(currentIndex: 3, slivers: [
-      SliverToBoxAdapter(
-        child: Container(
-          decoration: const BoxDecoration(
-            color: AppColors.white,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              /// 🏆 Теперь `ReviewsSummary` получает реальные данные
-              ReviewsSummary(
-                totalReviews: _totalReviews,
-                rating: _averageRating,
-                totalRatings: _totalReviews,
-                ratingDistribution: _ratingDistribution,
-                onBack: () {
-                  Navigator.of(context).pop();
-                },
-                onSeeAll: () {
-                  AutoRouter.of(context).push(const ReviewsRoute());
-                },
-              ),
-              Container(
-                padding: const EdgeInsets.only(left: 20, top: 10, bottom: 10),
-                child: Text(
-                  '$_totalReviews отзывов',
-                  style: const TextStyle(
-                      fontSize: 22, fontWeight: FontWeight.w600),
+    return Layouts(
+      isLoading: _isLoading, // Передаем состояние загрузки
+      currentIndex: 0,
+      slivers: [
+        SliverToBoxAdapter(
+          child: Container(
+            decoration: const BoxDecoration(color: AppColors.white),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                /// 🏆 `ReviewsSummary` получает актуальные данные
+                ReviewsSummary(
+                  totalReviews: _totalReviews,
+                  rating: _averageRating,
+                  totalRatings: _totalReviews,
+                  ratingDistribution: _ratingDistribution,
+                  onBack: () {
+                    Navigator.of(context).pop();
+                  },
+                  onSeeAll: () {
+                    AutoRouter.of(context).push(const ReviewsRoute());
+                  },
                 ),
-              ),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: _reviews.length,
-                itemBuilder: (context, index) {
-                  final review = _reviews[index];
+                Container(
+                  padding: const EdgeInsets.only(left: 20, top: 10, bottom: 10),
+                  child: Text(
+                    '$_totalReviews отзывов',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: _reviews.length,
+                  itemBuilder: (context, index) {
+                    final review = _reviews[index];
 
-                  // Достаем данные из "acf"
-                  final acf = review['acf'] ?? {};
-                  final name = acf['name'] ?? 'Аноним';
-                  final level = acf['level'] ?? 'Без уровня';
-                  final reviewText = acf['review'] ?? 'Без отзыва';
-                  final date = acf['date'] ?? '';
-                  final stars = int.tryParse(acf['stars'] ?? '0') ?? 0;
-                  final profileImage = (acf['img'] is String) ? acf['img'] : "";
+                    final acf = review['acf'] ?? {};
+                    final name = acf['name'] ?? 'Аноним';
+                    final level = acf['level'] ?? 'Без уровня';
+                    final reviewText = acf['review'] ?? 'Без отзыва';
+                    final date = acf['date'] ?? '';
+                    final stars = int.tryParse(acf['stars'] ?? '0') ?? 0;
+                    final profileImage =
+                        (acf['img'] is String) ? acf['img'] : "";
 
-                  return ReviewsCard(
-                    name: name,
-                    level: level,
-                    reviewText: reviewText,
-                    date: date,
-                    stars: stars,
-                    profileImage: profileImage.isNotEmpty ? profileImage : "",
-                    gallery: [],
-                  );
-                },
-              ),
-            ],
+                    return ReviewsCard(
+                      name: name,
+                      level: level,
+                      reviewText: reviewText,
+                      date: date,
+                      stars: stars,
+                      profileImage: profileImage.isNotEmpty ? profileImage : "",
+                      gallery: [],
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
-      )
-    ]);
+      ],
+    );
   }
 }

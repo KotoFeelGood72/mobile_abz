@@ -4,26 +4,25 @@ import 'package:mobile_abz/app/repository/repository.dart';
 import 'package:mobile_abz/presentation/widgets/post_template.dart';
 
 @RoutePage()
-class PortfolioIdScreen extends StatefulWidget {
+class SaleIdScreen extends StatefulWidget {
   final String id;
 
-  const PortfolioIdScreen({
+  const SaleIdScreen({
     super.key,
     @PathParam('id') required this.id,
   });
 
   @override
-  State<PortfolioIdScreen> createState() => _PortfolioScreenState();
+  State<SaleIdScreen> createState() => _SaleScreenState();
 }
 
-class _PortfolioScreenState extends State<PortfolioIdScreen> {
+class _SaleScreenState extends State<SaleIdScreen> {
   final ApiRepository _repository = ApiRepository();
 
   Map<String, dynamic>? _post;
   Future<void> _fetchPost() async {
     try {
-      final data =
-          await _repository.fetchData('gallery/post-${widget.id}.json');
+      final data = await _repository.fetchData('stocks/post-${widget.id}.json');
       setState(() {
         _post = data;
       });

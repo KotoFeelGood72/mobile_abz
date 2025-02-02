@@ -16,11 +16,13 @@ class Gallery extends StatefulWidget {
 
 class _GalleryState extends State<Gallery> {
   bool showAll = false;
-
+  bool _isLoading = false;
   @override
   Widget build(BuildContext context) {
     final dataToShow =
         showAll ? widget.galleryData : widget.galleryData.take(2).toList();
+
+    print(widget.galleryData);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -49,13 +51,19 @@ class _GalleryState extends State<Gallery> {
           if (!showAll && widget.galleryData.length > 2)
             Center(
               child: Btn(
-                onPressed: () {
-                  setState(() {
-                    showAll = true;
-                  });
-                },
-                name: 'Показать все',
-              ),
+                  onPressed: () {
+                    setState(() {
+                      showAll = true;
+                      _isLoading = true;
+                    });
+                    Future.delayed(const Duration(seconds: 2), () {
+                      setState(() {
+                        _isLoading = false;
+                      });
+                    });
+                  },
+                  name: 'Показать все',
+                  isLoading: _isLoading),
             ),
         ],
       ),
@@ -66,7 +74,8 @@ class _GalleryState extends State<Gallery> {
     if (data.containsKey('acf') && data['acf'] is Map<String, dynamic>) {
       List<dynamic> gallery = data['acf']['gallery'] ?? [];
       return gallery
-          .map<Map<String, String>>((item) => {"img": item['img'] as String})
+          .map<Map<String, String>>((item) =>
+              {"img": item['img'] as String, "title": data['title'] ?? ''})
           .toList();
     }
     return [];

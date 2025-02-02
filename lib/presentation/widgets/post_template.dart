@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_swiper_view/flutter_swiper_view.dart';
+import 'package:mobile_abz/app/themes/app_colors.dart';
 import 'package:mobile_abz/presentation/widgets/Icons.dart';
 import 'package:mobile_abz/presentation/widgets/layouts.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -19,10 +20,14 @@ class PostTemplate extends StatefulWidget {
 class _PostTemplateState extends State<PostTemplate> {
   Future<void> openUrl(String url) async {
     final Uri uri = Uri.parse(url);
+
     if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+      await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication, // Открывает в системном браузере
+      );
     } else {
-      print('Не удалось открыть ссылку: $url');
+      debugPrint('Не удалось открыть ссылку: $url');
     }
   }
 
@@ -225,8 +230,8 @@ class _PostTemplateState extends State<PostTemplate> {
                         child: Text(
                           context.element?.text ?? "Ссылка",
                           style: TextStyle(
-                              color: Colors.blue,
-                              decoration: TextDecoration.underline),
+                            color: AppColors.pink,
+                          ),
                         ),
                       );
                     },

@@ -1,5 +1,7 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_abz/app/router/app_router.gr.dart';
 import 'package:mobile_abz/app/themes/app_colors.dart';
 
 class SaleSlider extends StatefulWidget {
@@ -61,8 +63,8 @@ class _SaleSliderState extends State<SaleSlider> {
                                 const SizedBox(height: 8),
                                 ElevatedButton(
                                   onPressed: () {
-                                    // Navigator.pushNamed(
-                                    //     context, slide['id'].toString()!);
+                                    AutoRouter.of(context).push(SaleIdRoute(
+                                        id: slide['id'].toString()!));
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor:

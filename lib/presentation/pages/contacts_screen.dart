@@ -19,8 +19,8 @@ class ContactsScreen extends StatefulWidget {
 
 class _ContactsScreenState extends State<ContactsScreen> {
   final ApiRepository _repository = ApiRepository();
-
-  Map<String, dynamic>? _contacts; // Исправлено: сделал явный тип Map
+  Map<String, dynamic>? _contacts; // Контакты
+  bool _isLoading = true; // Флаг загрузки
 
   Future<void> _fetchContacts() async {
     try {
@@ -35,6 +35,10 @@ class _ContactsScreenState extends State<ContactsScreen> {
       }
     } catch (e) {
       print('Error: $e');
+    } finally {
+      setState(() {
+        _isLoading = false; // Отключаем лоадер после загрузки данных
+      });
     }
   }
 
@@ -47,6 +51,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
   @override
   Widget build(BuildContext context) {
     return Layouts(
+      isLoading: _isLoading, // Передаем состояние загрузки
       floatingActionButton: Container(
         width: double.infinity,
         margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -88,58 +93,59 @@ class _ContactsScreenState extends State<ContactsScreen> {
       currentIndex: 3,
       slivers: [
         SliverFillRemaining(
-            hasScrollBody: false,
-            child: Animate(
-              effects: const [FadeEffect()],
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Контакты',
-                            style: TextStyle(
-                                fontSize: 22, fontWeight: FontWeight.w500),
+          hasScrollBody: false,
+          child: Animate(
+            effects: const [FadeEffect()],
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Контакты',
+                          style: TextStyle(
+                              fontSize: 22, fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(height: 15),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.asset(
+                            'assets/images/map.png',
+                            height: 200,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
                           ),
-                          const SizedBox(height: 15),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
-                            child: Image.asset(
-                              'assets/images/map.png',
-                              height: 200,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            IconWidget(
+                              iconName: 'marker',
+                              size: 16,
+                              color: AppColors.pink,
                             ),
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            children: [
-                              IconWidget(
-                                iconName: 'marker',
-                                size: 16,
-                                color: AppColors.pink,
+                            const SizedBox(width: 8),
+                            const Expanded(
+                              child: Text(
+                                '5-ый Донской проезд, дом 19 ',
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w500),
                               ),
-                              SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  '5-ый Донской проезд, дом 19 ',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        if (_contacts != null &&
+                            _contacts!['link_to_map'] != null)
                           Btn(
                             onPressed: () {
                               launchUrl(Uri.parse(_contacts!['link_to_map']));
@@ -148,54 +154,52 @@ class _ContactsScreenState extends State<ContactsScreen> {
                             borderColor: AppColors.pink,
                             textColor: AppColors.pink,
                           ),
-                        ],
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(color: Colors.grey[300]!),
+                        bottom: BorderSide(color: Colors.grey[300]!),
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 20),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          top: BorderSide(color: Colors.grey[300]!),
-                          bottom: BorderSide(color: Colors.grey[300]!),
-                        ),
-                      ),
-                      child: ContactRow(
-                        icon: 'phone',
-                        color: AppColors.pink,
-                        text: _contacts?['phone'] ??
-                            'Телефон не указан', // Защита от null
-                      ),
+                    child: ContactRow(
+                      icon: 'phone',
+                      color: AppColors.pink,
+                      text: _contacts?['phone'] ?? 'Телефон не указан',
                     ),
-                    const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        children: [
-                          if (_contacts?['whatsapp'] !=
-                              null) // Проверка на null
-                            ContactRow(
-                              icon: 'wa',
-                              color: Colors.green,
-                              text: _contacts!['whatsapp'],
-                            ),
-                          if (_contacts?['telegram'] !=
-                              null) // Проверка на null
-                            SizedBox(width: 16),
-                          if (_contacts?['telegram'] != null)
-                            ContactRow(
-                              icon: 'tg',
-                              color: Colors.blue,
-                              text: _contacts!['telegram'],
-                            ),
-                        ],
-                      ),
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        if (_contacts?['whatsapp'] != null)
+                          ContactRow(
+                            icon: 'wa',
+                            color: Colors.green,
+                            text: _contacts!['whatsapp'],
+                          ),
+                        if (_contacts?['telegram'] != null)
+                          const SizedBox(width: 16),
+                        if (_contacts?['telegram'] != null)
+                          ContactRow(
+                            icon: 'tg',
+                            color: Colors.blue,
+                            text: _contacts!['telegram'],
+                          ),
+                      ],
                     ),
-                    const Spacer(),
-                  ],
-                ),
+                  ),
+                  const Spacer(),
+                ],
               ),
-            ))
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -221,10 +225,7 @@ class ContactRow extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           text,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-          ),
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
         ),
       ],
     );

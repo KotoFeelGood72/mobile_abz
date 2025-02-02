@@ -44,5 +44,15 @@ class AppRouter extends RootStackRouter {
             path: '/services/:id',
             durationInMilliseconds: 100,
             transitionsBuilder: TransitionsBuilders.fadeIn),
+        CustomRoute(
+            page: PortfolioIdRoute.page,
+            path: '/portfolio/:id',
+            durationInMilliseconds: 100,
+            transitionsBuilder: TransitionsBuilders.fadeIn),
+        CustomRoute(
+            page: SaleIdRoute.page,
+            path: '/sale/:id',
+            durationInMilliseconds: 100,
+            transitionsBuilder: TransitionsBuilders.fadeIn),
       ];
 }

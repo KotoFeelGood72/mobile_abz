@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:mobile_abz/app/themes/app_colors.dart';
 import 'package:mobile_abz/presentation/widgets/header.dart';
@@ -7,7 +9,8 @@ class Layouts extends StatelessWidget {
   final Widget? sliverAppBar;
   final List<Widget> slivers;
   final Widget? floatingActionButton;
-  final int currentIndex; // Добавлено поле для передачи текущего индекса
+  final int currentIndex;
+  final bool isLoading; // Добавлено поле для управления loader'ом
 
   const Layouts({
     super.key,
@@ -15,6 +18,7 @@ class Layouts extends StatelessWidget {
     this.sliverAppBar,
     this.floatingActionButton,
     required this.currentIndex,
+    this.isLoading = false, // По умолчанию false, если явно не передано true
   });
 
   @override
@@ -23,27 +27,82 @@ class Layouts extends StatelessWidget {
       body: SafeArea(
         bottom: true,
         top: true,
-        child: Container(
-          decoration: const BoxDecoration(color: AppColors.white),
-          child: CustomScrollView(
-            slivers: [
-              if (sliverAppBar != null) sliverAppBar!,
-              SliverPersistentHeader(
-                pinned: false,
-                floating: false,
-                delegate: _FixedHeaderDelegate(
-                  child: const Header(),
-                ),
+        child: Stack(
+          children: [
+            Container(
+              decoration: const BoxDecoration(color: AppColors.white),
+              child: CustomScrollView(
+                slivers: [
+                  if (sliverAppBar != null) sliverAppBar!,
+                  SliverPersistentHeader(
+                    pinned: false,
+                    floating: false,
+                    delegate: _FixedHeaderDelegate(
+                      child: const Header(),
+                    ),
+                  ),
+                  ...slivers,
+                ],
               ),
-              ...slivers,
-            ],
-          ),
+            ),
+
+            // Loader на весь экран, если идет загрузка
+            if (isLoading) _buildLoader(),
+          ],
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: floatingActionButton,
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: currentIndex,
+      ),
+    );
+  }
+
+  Widget _buildLoader() {
+    return Positioned.fill(
+      child: Stack(
+        children: [
+          // Размытие фона
+          BackdropFilter(
+            filter: ImageFilter.blur(
+                sigmaX: 5.0, sigmaY: 5.0), // Интенсивность blur
+            child: Container(
+              color: AppColors.white, // Полупрозрачный фон
+            ),
+          ),
+          Center(
+            child: SizedBox(
+              width: 60,
+              height: 60,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Логотип в центре
+                  Image.asset(
+                    'assets/images/logo.png',
+                    width: 70,
+                    height: 70,
+                  ),
+                  // Крутящийся индикатор
+                  Positioned.fill(
+                    child: Center(
+                      child: SizedBox(
+                        width: 80, // Размер спиннера
+                        height: 80,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 4,
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(AppColors.pink),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -62,9 +121,9 @@ class _FixedHeaderDelegate extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  double get maxExtent => 60; // Высота Header
+  double get maxExtent => 60;
   @override
-  double get minExtent => 60; // Высота Header
+  double get minExtent => 60;
   @override
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
     return false;

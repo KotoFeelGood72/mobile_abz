@@ -7,30 +7,30 @@ import 'package:mobile_abz/presentation/widgets/featured_card.dart';
 import 'package:mobile_abz/presentation/widgets/layouts.dart';
 
 @RoutePage()
-class PortfolioScreen extends StatefulWidget {
-  const PortfolioScreen({super.key});
+class SaleScreen extends StatefulWidget {
+  const SaleScreen({super.key});
 
   @override
-  State<PortfolioScreen> createState() => _PortfolioScreenState();
+  State<SaleScreen> createState() => _SaleScreenState();
 }
 
-class _PortfolioScreenState extends State<PortfolioScreen> {
+class _SaleScreenState extends State<SaleScreen> {
   final ApiRepository _repository = ApiRepository();
-  List<Map<String, String>> _Portfolios = [];
+  List<Map<String, String>> _featureds = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchPortfolio();
+    _fetchFeatured();
   }
 
   /// 📌 Загружаем рекомендации из API
-  Future<void> _fetchPortfolio() async {
+  Future<void> _fetchFeatured() async {
     try {
       final data = await _repository
           .fetchData('recommendations/all-recommendations.json');
       setState(() {
-        _Portfolios = _extractRecommendations(data);
+        _featureds = _extractRecommendations(data);
       });
     } catch (e) {
       print('Error: $e');
@@ -72,16 +72,16 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: _Portfolios.length,
+              itemCount: _featureds.length,
               itemBuilder: (context, index) {
-                final recommendation = _Portfolios[index];
+                final recommendation = _featureds[index];
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16),
                   child: FeaturedCard(
                     title: recommendation['title']!,
                     image: recommendation['image']!,
                     onTap: () => AutoRouter.of(context).push(
-                      PortfolioIdRoute(id: recommendation['id']!),
+                      FeaturedIdRoute(id: recommendation['id']!),
                     ),
                   ),
                 );
