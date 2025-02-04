@@ -273,6 +273,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         child: Text(
                                           service['title']!,
                                           textAlign: TextAlign.center,
+                                          style: TextStyle(fontSize: 13),
                                         ),
                                       ),
                                     ],

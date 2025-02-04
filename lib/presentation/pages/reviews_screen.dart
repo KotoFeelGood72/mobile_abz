@@ -24,7 +24,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   int _totalReviews = 0;
   Map<int, int> _ratingDistribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
 
-  bool _isLoading = true; // Флаг загрузки
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -43,12 +43,11 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
       print('Error: $e');
     } finally {
       setState(() {
-        _isLoading = false; // Отключаем лоадер после загрузки данных
+        _isLoading = false;
       });
     }
   }
 
-  /// 📌 Метод для расчета среднего рейтинга и распределения звезд
   void _calculateReviewStats() {
     if (_reviews.isEmpty) return;
 
@@ -75,7 +74,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   @override
   Widget build(BuildContext context) {
     return Layouts(
-      isLoading: _isLoading, // Передаем состояние загрузки
+      isLoading: _isLoading,
       currentIndex: 0,
       slivers: [
         SliverToBoxAdapter(
@@ -84,7 +83,6 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                /// 🏆 `ReviewsSummary` получает актуальные данные
                 ReviewsSummary(
                   totalReviews: _totalReviews,
                   rating: _averageRating,

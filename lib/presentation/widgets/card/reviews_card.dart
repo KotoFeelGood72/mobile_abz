@@ -33,7 +33,6 @@ class ReviewsCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Верхний блок с профилем
             Row(
               children: [
                 CircleAvatar(
