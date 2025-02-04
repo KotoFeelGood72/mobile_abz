@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:mobile_abz/app/themes/app_colors.dart';
+import 'package:mobile_abz/presentation/widgets/custom_loader.dart';
 import 'package:mobile_abz/presentation/widgets/header.dart';
 import 'package:mobile_abz/presentation/widgets/ui/bottom_bar.dart';
 
@@ -24,12 +25,13 @@ class Layouts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        bottom: true,
-        top: true,
-        child: Stack(
-          children: [
-            Container(
+      body: Stack(
+        children: [
+          // Основной контент
+          SafeArea(
+            bottom: true,
+            top: true,
+            child: Container(
               decoration: const BoxDecoration(color: AppColors.white),
               child: CustomScrollView(
                 slivers: [
@@ -45,65 +47,26 @@ class Layouts extends StatelessWidget {
                 ],
               ),
             ),
-
-            // Loader на весь экран, если идет загрузка
-            if (isLoading) _buildLoader(),
-          ],
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: floatingActionButton,
-      bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: currentIndex,
-      ),
-    );
-  }
-
-  Widget _buildLoader() {
-    return Positioned.fill(
-      child: Stack(
-        children: [
-          // Размытие фона
-          BackdropFilter(
-            filter: ImageFilter.blur(
-                sigmaX: 5.0, sigmaY: 5.0), // Интенсивность blur
-            child: Container(
-              color: AppColors.white, // Полупрозрачный фон
-            ),
           ),
-          Center(
-            child: SizedBox(
-              width: 60,
-              height: 60,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Логотип в центре
-                  Image.asset(
-                    'assets/images/logo.png',
-                    width: 70,
-                    height: 70,
-                  ),
-                  // Крутящийся индикатор
-                  Positioned.fill(
-                    child: Center(
-                      child: SizedBox(
-                        width: 80, // Размер спиннера
-                        height: 80,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 4,
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(AppColors.pink),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+
+          // Loader НАД ВСЕМИ ЭЛЕМЕНТАМИ
+          if (isLoading)
+            Positioned.fill(
+              child: AbsorbPointer(
+                absorbing: true, // Блокирует взаимодействие под лоадером
+                child: Container(
+                  color: Colors.black.withOpacity(0.7), // Полупрозрачный фон
+                  child: const CustomLoader(),
+                ),
               ),
             ),
-          ),
         ],
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: isLoading ? null : floatingActionButton,
+      bottomNavigationBar: isLoading
+          ? null // Убираем нижний бар, когда лоадер активен
+          : CustomBottomNavBar(currentIndex: currentIndex),
     );
   }
 }
