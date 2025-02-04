@@ -20,6 +20,8 @@ class _PortfolioScreenState extends State<PortfolioIdScreen> {
   final ApiRepository _repository = ApiRepository();
 
   Map<String, dynamic>? _post;
+  bool _isLoading = true; // Добавляем состояние загрузки
+
   Future<void> _fetchPost() async {
     try {
       final data =
@@ -31,6 +33,10 @@ class _PortfolioScreenState extends State<PortfolioIdScreen> {
       print(_post);
     } catch (e) {
       print('Error: $e');
+    } finally {
+      setState(() {
+        _isLoading = false; // Завершаем загрузку
+      });
     }
   }
 
@@ -42,6 +48,6 @@ class _PortfolioScreenState extends State<PortfolioIdScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return PostTemplate(content: _post);
+    return PostTemplate(content: _post, isLoading: _isLoading);
   }
 }

@@ -58,10 +58,13 @@ class _ImageSliderState extends State<ImageSlider> {
                               if (loadingProgress == null) {
                                 Future.delayed(
                                     const Duration(milliseconds: 200), () {
-                                  setState(() {
-                                    _isLoadingList[index] =
-                                        false; // Изображение загружено
-                                  });
+                                  if (mounted) {
+                                    // Проверяем, что виджет всё ещё в дереве
+                                    setState(() {
+                                      _isLoadingList[index] =
+                                          false; // Изображение загружено
+                                    });
+                                  }
                                 });
                                 return child;
                               }

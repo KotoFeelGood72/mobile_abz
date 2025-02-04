@@ -20,6 +20,8 @@ class _ServicesScreenState extends State<ServicesIdScreen> {
   final ApiRepository _repository = ApiRepository();
 
   Map<String, dynamic>? _post;
+  bool _isLoading = true; // Флаг загрузки данных
+
   Future<void> _fetchPost() async {
     try {
       final data =
@@ -31,6 +33,10 @@ class _ServicesScreenState extends State<ServicesIdScreen> {
       print(_post);
     } catch (e) {
       print('Error: $e');
+    } finally {
+      setState(() {
+        _isLoading = false; // Завершаем загрузку
+      });
     }
   }
 
@@ -42,6 +48,6 @@ class _ServicesScreenState extends State<ServicesIdScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return PostTemplate(content: _post);
+    return PostTemplate(content: _post, isLoading: _isLoading);
   }
 }

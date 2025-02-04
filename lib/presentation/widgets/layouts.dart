@@ -49,7 +49,6 @@ class Layouts extends StatelessWidget {
             ),
           ),
 
-          // Loader НАД ВСЕМИ ЭЛЕМЕНТАМИ
           if (isLoading)
             Positioned.fill(
               child: AbsorbPointer(

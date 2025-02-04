@@ -11,7 +11,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 class PostTemplate extends StatefulWidget {
   final dynamic content;
-  const PostTemplate({super.key, required this.content});
+  final bool isLoading;
+  const PostTemplate(
+      {super.key, required this.content, required this.isLoading});
 
   @override
   State<PostTemplate> createState() => _PostTemplateState();
@@ -38,7 +40,7 @@ class _PostTemplateState extends State<PostTemplate> {
       gallery = (widget.content['acf']?['gallery'] as List<dynamic>?) ?? [];
     }
     String description = widget.content?['acf']?['description'] ?? '';
-    return Layouts(currentIndex: 1, slivers: [
+    return Layouts(currentIndex: 1, isLoading: widget.isLoading, slivers: [
       SliverToBoxAdapter(
           child: Animate(
         effects: [FadeEffect()],

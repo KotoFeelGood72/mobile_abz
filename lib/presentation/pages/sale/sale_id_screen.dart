@@ -20,6 +20,8 @@ class _SaleScreenState extends State<SaleIdScreen> {
   final ApiRepository _repository = ApiRepository();
 
   Map<String, dynamic>? _post;
+  bool _isLoading = true; // Добавлено состояние загрузки
+
   Future<void> _fetchPost() async {
     try {
       final data = await _repository.fetchData('stocks/post-${widget.id}.json');
@@ -30,6 +32,10 @@ class _SaleScreenState extends State<SaleIdScreen> {
       print(_post);
     } catch (e) {
       print('Error: $e');
+    } finally {
+      setState(() {
+        _isLoading = false; // Завершаем загрузку
+      });
     }
   }
 
@@ -41,6 +47,6 @@ class _SaleScreenState extends State<SaleIdScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return PostTemplate(content: _post);
+    return PostTemplate(content: _post, isLoading: _isLoading);
   }
 }

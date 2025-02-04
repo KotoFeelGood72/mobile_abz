@@ -36,8 +36,20 @@ class ReviewsCard extends StatelessWidget {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundImage: NetworkImage(profileImage),
+                  backgroundColor: AppColors.pink,
+                  backgroundImage: profileImage.isNotEmpty &&
+                          Uri.tryParse(profileImage)?.hasAbsolutePath == true
+                      ? NetworkImage(profileImage)
+                      : null, // Используем изображение только если оно есть
                   radius: 24,
+                  child: profileImage.isNotEmpty &&
+                          Uri.tryParse(profileImage)?.hasAbsolutePath == true
+                      ? null
+                      : Text(
+                          name.isNotEmpty ? name[0] : "?",
+                          style: const TextStyle(
+                              fontSize: 20, color: Colors.white),
+                        ),
                 ),
                 const SizedBox(width: 12),
                 Column(

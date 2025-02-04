@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:mobile_abz/app/themes/app_colors.dart';
-import 'package:mobile_abz/presentation/widgets/ui/btn.dart';
+import 'package:mobile_abz/app/repository/repository.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 
 class FormBottomSheet {
   static void show({
@@ -46,6 +47,70 @@ class _FormContent extends StatefulWidget {
 
 class _FormContentState extends State<_FormContent> {
   final _formKey = GlobalKey<FormBuilderState>();
+  final ApiRepository _repository = ApiRepository();
+  final _phoneController =
+      MaskedTextController(mask: '+7 (000) 000-00-00'); // Маска для телефона
+  bool _isLoading = false;
+
+  Future<void> _submitForm() async {
+    print('Началась обработка формы'); // ✅ Лог начала обработки формы
+
+    if (_formKey.currentState?.saveAndValidate() ?? false) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final formData = _formKey.currentState?.value ?? {};
+      final phone = _phoneController.text
+          .replaceAll(RegExp(r'[^0-9]'), ''); // Убираем все символы кроме цифр
+
+      print('Собранные данные: $formData'); // ✅ Лог данных перед отправкой
+      print('Отправляемый номер телефона: $phone'); // ✅ Лог формата номера
+
+      try {
+        final response = await _repository.sendFormData({
+          'name': formData['name'],
+          'phone': phone,
+          'message': formData['question'] ?? '',
+        });
+
+        print('Ответ сервера: $response'); // ✅ Лог ответа сервера
+
+        if (mounted) {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Форма успешно отправлена!'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      } catch (e) {
+        print('Ошибка при отправке: $e'); // ✅ Лог ошибки
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Ошибка при отправке: $e'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+        print('Обработка формы завершена'); // ✅ Лог завершения
+      }
+    } else {
+      print(
+          'Форма содержит ошибки: ${_formKey.currentState?.errors}'); // ✅ Лог ошибок валидации
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,6 +157,7 @@ class _FormContentState extends State<_FormContent> {
                 ),
                 const SizedBox(height: 16),
                 FormBuilderTextField(
+                  controller: _phoneController, // Подключаем маску
                   cursorColor: AppColors.pink,
                   name: 'phone',
                   decoration: const InputDecoration(
@@ -102,10 +168,6 @@ class _FormContentState extends State<_FormContent> {
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.required(
                         errorText: 'Введите телефон'),
-                    FormBuilderValidators.match(
-                      RegExp(r'^(\\+?7|8)?9\\d{9}$'),
-                      errorText: 'Введите корректный номер',
-                    ),
                   ]),
                 ),
                 const SizedBox(height: 16),
@@ -123,24 +185,15 @@ class _FormContentState extends State<_FormContent> {
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.pink
-                            .withOpacity(0.5), // Цвет тени с прозрачностью
-                        blurRadius: 11.6, // Радиус размытия
-                        spreadRadius: 2, // Распространение тени
-                        offset: const Offset(0, 4), // Смещение тени
+                        color: AppColors.pink.withOpacity(0.5),
+                        blurRadius: 11.6,
+                        spreadRadius: 2,
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
                   child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState?.saveAndValidate() ?? false) {
-                        final data = _formKey.currentState?.value;
-                        print('Форма отправлена: $data');
-                        Navigator.pop(context);
-                      } else {
-                        print('Форма содержит ошибки');
-                      }
-                    },
+                    onPressed: _isLoading ? null : _submitForm,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.purple,
                       shape: RoundedRectangleBorder(
@@ -148,14 +201,23 @@ class _FormContentState extends State<_FormContent> {
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    child: const Text(
-                      'Заказать звонок',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
+                    child: _isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Text(
+                            'Заказать звонок',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
                 ),
               ],
