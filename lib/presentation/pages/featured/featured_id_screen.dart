@@ -20,7 +20,7 @@ class _FeaturedScreenState extends State<FeaturedIdScreen> {
   final ApiRepository _repository = ApiRepository();
 
   Map<String, dynamic>? _post;
-  bool _isLoading = true; // Добавляем состояние загрузки
+  bool _isLoading = true;
 
   Future<void> _fetchPost() async {
     try {
@@ -35,7 +35,7 @@ class _FeaturedScreenState extends State<FeaturedIdScreen> {
       print('Error: $e');
     } finally {
       setState(() {
-        _isLoading = false; // Завершаем загрузку
+        _isLoading = false;
       });
     }
   }

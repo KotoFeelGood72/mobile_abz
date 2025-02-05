@@ -52,9 +52,9 @@ class Layouts extends StatelessWidget {
           if (isLoading)
             Positioned.fill(
               child: AbsorbPointer(
-                absorbing: true, // Блокирует взаимодействие под лоадером
+                absorbing: true,
                 child: Container(
-                  color: Colors.black.withOpacity(0.7), // Полупрозрачный фон
+                  color: Colors.black.withOpacity(0.7),
                   child: const CustomLoader(),
                 ),
               ),

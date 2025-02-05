@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -39,10 +37,10 @@ class _FaqScreenState extends State<FaqScreen> {
           );
         });
       } else {
-        print("Ошибка: В JSON нет ключа 'faq'");
+        // print("Ошибка: В JSON нет ключа 'faq'");
       }
     } catch (e) {
-      print('Error: $e');
+      // print('Error: $e');
     } finally {
       setState(() {
         _isLoading = false; // Отключаем лоадер после загрузки данных
@@ -65,7 +63,7 @@ class _FaqScreenState extends State<FaqScreen> {
   @override
   Widget build(BuildContext context) {
     return Layouts(
-      isLoading: _isLoading, // Передаем флаг загрузки
+      isLoading: _isLoading,
       floatingActionButton: Align(
         alignment: Alignment.bottomCenter,
         child: Container(

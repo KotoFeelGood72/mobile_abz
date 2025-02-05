@@ -42,8 +42,40 @@ class _SaleSliderState extends State<SaleSlider> {
                         fit: StackFit.expand,
                         children: [
                           Image.network(
-                            slide['acf']['img']!,
+                            slide['acf']['img'] is String &&
+                                    slide['acf']['img'].isNotEmpty
+                                ? slide['acf']['img']
+                                : 'https://via.placeholder.com/400', // Заглушка изображения
                             fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) {
+                                return child; // Картинка загружена
+                              }
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          (loadingProgress.expectedTotalBytes ??
+                                              1)
+                                      : null,
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.image_not_supported,
+                                        color: Colors.grey, size: 50),
+                                    const SizedBox(height: 5),
+                                    Text("Не удалось загрузить",
+                                        style: TextStyle(color: Colors.grey)),
+                                  ],
+                                ),
+                              );
+                            },
                           ),
                           Positioned(
                             bottom: 16,

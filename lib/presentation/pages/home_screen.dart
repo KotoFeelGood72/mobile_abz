@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -65,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _sales = data;
       });
     } catch (e) {
-      print('Error: $e');
+      // print('Error: $e');
     }
   }
 
@@ -77,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _calculateReviewStats();
       });
     } catch (e) {
-      print('Error: $e');
+      // print('Error: $e');
     }
   }
 
@@ -130,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Animate(
       child: Layouts(
-        isLoading: _isLoading, // Передаем актуальное состояние загрузки
+        isLoading: _isLoading,
         currentIndex: 0,
         slivers: [
           SliverToBoxAdapter(
