@@ -36,15 +36,25 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
-
+  
 flutter_native_splash:
-  color: "#ffffff" # Цвет фона сплэш-экрана
-  image: assets/images/splash.png # Путь к логотипу
+  color: "#000000"
+  image: assets/images/spl.png
   android: true
   ios: true
-  fullscreen: true # Растянуть на весь экран
+  fullscreen: true
 
-  ios_content_mode: center
+  # Растягивание изображения
+  ios_content_mode: scaleAspectFill
+  android_gravity: fill
+
+  # Настройки для Android 12+
+  android_12:
+    image: assets/images/spl.png
+    icon_background_color: "#000000"
+    image_dark: assets/images/spl.png
+    icon_background_color_dark: "#000000"
+
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true

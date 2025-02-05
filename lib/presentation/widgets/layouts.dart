@@ -54,7 +54,7 @@ class Layouts extends StatelessWidget {
               child: AbsorbPointer(
                 absorbing: true,
                 child: Container(
-                  color: Colors.black.withOpacity(0.7),
+                  color: AppColors.black,
                   child: const CustomLoader(),
                 ),
               ),
