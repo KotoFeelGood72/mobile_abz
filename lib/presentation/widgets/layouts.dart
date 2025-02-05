@@ -54,7 +54,7 @@ class Layouts extends StatelessWidget {
               child: AbsorbPointer(
                 absorbing: true, // Блокирует взаимодействие под лоадером
                 child: Container(
-                  color: Colors.black.withOpacity(0.7), // Полупрозрачный фон
+                  color: AppColors.black,
                   child: const CustomLoader(),
                 ),
               ),
