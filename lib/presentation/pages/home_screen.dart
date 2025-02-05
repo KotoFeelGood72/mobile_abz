@@ -230,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                    if (_services.isNotEmpty)
+                    if (!_services.isNotEmpty)
                       CarouselSlider(
                         items: _services.map<Widget>((service) {
                           return Builder(

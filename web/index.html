@@ -1,76 +1,111 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
     <base href="$FLUTTER_BASE_HREF" />
+
     <meta charset="UTF-8" />
     <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
-    <meta name="description" content="A new Flutter project." />
+    <meta name="description" content="АвтоБезЗабот" />
 
     <!-- iOS meta tags & icons -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-    <meta name="apple-mobile-web-app-title" content="my_flutter_app" />
+    <meta name="apple-mobile-web-app-title" content="АвтоБезЗабот" />
     <link rel="apple-touch-icon" href="icons/Icon-192.png" />
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png" />
-    <title>my_flutter_app</title>
+
+    <title>АвтоБезЗабот</title>
     <link rel="manifest" href="manifest.json" />
 
     <meta
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
       name="viewport"
     />
-
     <style id="splash-screen-style">
-      html,
+      html {
+        height: 100%;
+      }
+
       body {
         margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        background-color: #000000; /* Цвет фона — может быть любым */
+        min-height: 100%;
+        background-color: #0000;
+        background-size: 100% 100%;
       }
 
-      /* Родительский контейнер под splash */
-      #splash {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 9999;
-        /* Дополнительно:
-           Если хотите, чтобы фон не прокручивался при scroll, 
-           используйте overflow: hidden; на body или html.
-        */
+      .center {
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
       }
 
-      /* Само изображение — растянуть во всю ширину/высоту */
-      #splash img {
+      .contain {
         display: block;
         width: 100%;
         height: 100%;
-        object-fit: cover; /* cover или contain */
+        object-fit: contain;
       }
 
-      /* Чтобы после удаления сплэша у body был прозрачный фон */
-      .hide-splash {
-        background-color: transparent !important;
+      .stretch {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      .cover {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .bottom {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        -ms-transform: translate(-50%, 0);
+        transform: translate(-50%, 0);
+      }
+
+      .bottomLeft {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+      }
+
+      .bottomRight {
+        position: absolute;
+        bottom: 0;
+        right: 0;
       }
     </style>
-
     <script id="splash-screen-script">
-      // Удаляем сплэш-экран после загрузки Flutter
       function removeSplashFromWeb() {
         document.getElementById("splash")?.remove();
-        // Заменяем фон body на прозрачный
-        document.body.classList.add("hide-splash");
+        document.getElementById("splash-branding")?.remove();
+        document.body.style.background = "transparent";
       }
     </script>
   </head>
   <body>
-    <!-- picture, сгенерированное flutter_native_splash -->
     <picture id="splash">
       <source
         srcset="
@@ -90,12 +125,17 @@
         "
         media="(prefers-color-scheme: dark)"
       />
-      <!-- Убираем класс "center"; теперь работает через object-fit -->
-      <img aria-hidden="true" src="splash/img/light-1x.png" alt="Splash" />
+      <img
+        class="center cover"
+        aria-hidden="true"
+        src="splash/img/light-1x.png"
+        alt=""
+      />
     </picture>
 
-    <script src="flutter_bootstrap.js" async></script>
-    <script>
+    <script src="flutter_bootstrap.js" async=""></script>
+
+    <script type="text/javascript">
       window.flutterWebRenderer = "html";
     </script>
   </body>
