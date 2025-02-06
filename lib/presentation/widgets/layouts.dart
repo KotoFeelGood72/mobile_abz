@@ -34,6 +34,7 @@ class Layouts extends StatelessWidget {
             child: Container(
               decoration: const BoxDecoration(color: AppColors.white),
               child: CustomScrollView(
+                physics: ClampingScrollPhysics(),
                 slivers: [
                   if (sliverAppBar != null) sliverAppBar!,
                   SliverPersistentHeader(
