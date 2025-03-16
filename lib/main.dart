@@ -24,6 +24,7 @@ class ABZAuto extends StatelessWidget {
     final appRouter = getIt<AppRouter>();
     return MaterialApp.router(
       theme: ThemeData(
+        fontFamily: 'EuclidCircularA',
         textTheme: buildTextTheme(),
         scaffoldBackgroundColor: AppColors.black,
       ),

@@ -47,6 +47,6 @@ class _SaleScreenState extends State<SaleIdScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return PostTemplate(content: _post, isLoading: _isLoading);
+    return PostTemplate(content: _post, isLoading: _isLoading, title: 'Акции');
   }
 }

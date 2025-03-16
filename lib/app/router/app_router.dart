@@ -15,6 +15,11 @@ class AppRouter extends RootStackRouter {
             durationInMilliseconds: 100,
             transitionsBuilder: TransitionsBuilders.fadeIn),
         CustomRoute(
+            page: OrderRoute.page,
+            path: '/order',
+            durationInMilliseconds: 100,
+            transitionsBuilder: TransitionsBuilders.fadeIn),
+        CustomRoute(
             page: ReviewsRoute.page,
             path: '/reviews',
             durationInMilliseconds: 100,

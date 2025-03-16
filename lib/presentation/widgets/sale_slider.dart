@@ -33,6 +33,9 @@ class _SaleSliderState extends State<SaleSlider> {
           ),
           CarouselSlider(
             items: widget.slides.map((slide) {
+              String imageUrl =
+                  slide['acf']?['img']?.toString() ?? ''; // Получаем URL
+
               return Builder(
                 builder: (BuildContext context) {
                   return Container(
@@ -41,42 +44,26 @@ class _SaleSliderState extends State<SaleSlider> {
                       child: Stack(
                         fit: StackFit.expand,
                         children: [
-                          Image.network(
-                            slide['acf']['img'] is String &&
-                                    slide['acf']['img'].isNotEmpty
-                                ? slide['acf']['img']
-                                : 'https://via.placeholder.com/400', // Заглушка изображения
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) {
-                                return child; // Картинка загружена
-                              }
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes !=
-                                          null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          (loadingProgress.expectedTotalBytes ??
-                                              1)
-                                      : null,
-                                ),
-                              );
-                            },
-                            errorBuilder: (context, error, stackTrace) {
-                              return Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.image_not_supported,
-                                        color: Colors.grey, size: 50),
-                                    const SizedBox(height: 5),
-                                    Text("Не удалось загрузить",
-                                        style: TextStyle(color: Colors.grey)),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
+                          // Загружаем изображение с безопасной проверкой URL
+                          if (imageUrl.isNotEmpty &&
+                              Uri.tryParse(imageUrl)?.hasAbsolutePath == true)
+                            Image.network(
+                              imageUrl,
+                              fit: BoxFit.cover,
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              },
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Center(
+                                      child: CircularProgressIndicator()),
+                            )
+                          else
+                            const Center(child: CircularProgressIndicator()),
+
+                          // Оверлей с текстом и кнопкой
                           Positioned(
                             bottom: 16,
                             left: 16,
@@ -85,7 +72,7 @@ class _SaleSliderState extends State<SaleSlider> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  (slide['title'] ?? ''),
+                                  slide['title'] ?? '',
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 18,
@@ -95,8 +82,9 @@ class _SaleSliderState extends State<SaleSlider> {
                                 const SizedBox(height: 8),
                                 ElevatedButton(
                                   onPressed: () {
-                                    AutoRouter.of(context).push(SaleIdRoute(
-                                        id: slide['id'].toString()!));
+                                    AutoRouter.of(context).push(
+                                      SaleIdRoute(id: slide['id'].toString()),
+                                    );
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor:
@@ -169,7 +157,7 @@ class _SaleSliderState extends State<SaleSlider> {
           const Divider(
             height: 1,
             color: Color(0xFFEDEDED),
-          )
+          ),
         ],
       ),
     );

@@ -31,18 +31,12 @@ class ReviewsSummary extends StatelessWidget {
           Row(
             children: [
               if (onBack != null)
-                GestureDetector(
-                  onTap: onBack,
-                  child: const SizedBox(
-                      width: 16, child: IconWidget(iconName: 'arrow-left')),
+                Text(
+                  '$totalReviews отзывов',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
-              SizedBox(width: onBack != null ? 10 : 0),
-              Text(
-                '$totalReviews отзывов',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
             ],
           ),
           const SizedBox(height: 20),

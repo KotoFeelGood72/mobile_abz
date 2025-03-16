@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:mobile_abz/app/repository/repository.dart';
+import 'package:mobile_abz/app/router/app_router.gr.dart';
 import 'package:mobile_abz/app/themes/app_colors.dart';
 import 'package:mobile_abz/presentation/widgets/form_bottom_sheet.dart';
 import 'package:mobile_abz/presentation/widgets/layouts.dart';
@@ -63,6 +64,7 @@ class _FaqScreenState extends State<FaqScreen> {
   @override
   Widget build(BuildContext context) {
     return Layouts(
+      title: 'FAQ',
       isLoading: _isLoading,
       floatingActionButton: Align(
         alignment: Alignment.bottomCenter,
@@ -81,12 +83,7 @@ class _FaqScreenState extends State<FaqScreen> {
             ],
           ),
           child: ElevatedButton(
-            onPressed: () => FormBottomSheet.show(
-              context: context,
-              title: 'Свяжитесь с нами',
-              subtitle:
-                  'Заполните форму, и мы свяжемся с вами в ближайшее время.',
-            ),
+            onPressed: () => AutoRouter.of(context).push(const OrderRoute()),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.purple,
               shape: RoundedRectangleBorder(
@@ -95,7 +92,7 @@ class _FaqScreenState extends State<FaqScreen> {
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
             child: const Text(
-              'Связаться с нами',
+              'Хочу записаться',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,

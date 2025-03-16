@@ -48,6 +48,7 @@ class _PortfolioScreenState extends State<PortfolioIdScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return PostTemplate(content: _post, isLoading: _isLoading);
+    return PostTemplate(
+        content: _post, isLoading: _isLoading, title: 'Портфолио');
   }
 }

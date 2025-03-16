@@ -12,11 +12,13 @@ class Layouts extends StatelessWidget {
   final Widget? floatingActionButton;
   final int currentIndex;
   final bool isLoading; // Добавлено поле для управления loader'ом
+  final String? title; // Добавлено поле для заголовка
 
   const Layouts({
     super.key,
     required this.slivers,
     this.sliverAppBar,
+    this.title,
     this.floatingActionButton,
     required this.currentIndex,
     this.isLoading = false, // По умолчанию false, если явно не передано true
@@ -32,7 +34,12 @@ class Layouts extends StatelessWidget {
             bottom: true,
             top: true,
             child: Container(
-              decoration: const BoxDecoration(color: AppColors.white),
+              decoration: BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
+                  )),
               child: CustomScrollView(
                 physics: ClampingScrollPhysics(),
                 slivers: [
@@ -41,7 +48,9 @@ class Layouts extends StatelessWidget {
                     pinned: false,
                     floating: false,
                     delegate: _FixedHeaderDelegate(
-                      child: const Header(),
+                      child: Header(
+                        title: title,
+                      ),
                     ),
                   ),
                   ...slivers,

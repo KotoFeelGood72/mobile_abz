@@ -128,6 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Animate(
       child: Layouts(
+        title: 'Главная',
         isLoading: _isLoading,
         currentIndex: 0,
         slivers: [
@@ -230,7 +231,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                    if (!_services.isNotEmpty)
+                    if (_services.length > 0)
                       CarouselSlider(
                         items: _services.map<Widget>((service) {
                           return Builder(

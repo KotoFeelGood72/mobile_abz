@@ -58,6 +58,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
     return Layouts(
       isLoading: _isLoading, // Передаем состояние загрузки
       currentIndex: 1,
+      title: 'Рекомендации',
       slivers: [
         SliverToBoxAdapter(
           child: Animate(
@@ -66,13 +67,7 @@ class _FeaturedScreenState extends State<FeaturedScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    'Рекомендации',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-                ),
+
                 const SizedBox(height: 16),
 
                 /// 📌 Отображаем рекомендации

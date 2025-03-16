@@ -75,6 +75,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
     return Layouts(
       isLoading: _isLoading,
       currentIndex: 0,
+      title: 'Отзывы',
       slivers: [
         SliverToBoxAdapter(
           child: Container(
