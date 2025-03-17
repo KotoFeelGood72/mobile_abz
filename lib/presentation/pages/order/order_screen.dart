@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile_abz/app/repository/repository.dart';
 import 'package:mobile_abz/presentation/widgets/layouts.dart';
 import 'package:mobile_abz/presentation/widgets/ui/custom_dropdown.dart';
@@ -18,7 +20,7 @@ class _OrderScreenState extends State<OrderScreen> {
   final ApiRepository _repository = ApiRepository();
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
+  final _phoneController = MaskedTextController(mask: '+7 (000) 000-00-00');
 
   bool _isLoading = false;
   String? _selectedService;
@@ -27,21 +29,15 @@ class _OrderScreenState extends State<OrderScreen> {
   Map<String, dynamic>? _activeBooking; // Активная запись с ID
 
   final List<String> _services = [
-    'Забронировать стекло',
-    'Забронировать металл',
-    'Забронировать пластик',
+    'Бронирование фар пленкой',
+    'Оклейка деталей салона пленкой',
+    'Оклейка полиуретановой пленкой',
+    'Оклейка матовой пленкой',
+    'Оклейка антигравийной пленкой',
   ];
 
-  final List<String> _dates = [
-    '24 Фев.',
-    '25 Фев.',
-    '26 Фев.',
-    '27 Фев.',
-    '28 Фев.',
-    '29 Фев.'
-  ];
-
-  final List<String> _times = ['16:00', '17:00', '18:00', '19:30', '20:00'];
+  List<String> _dates = [];
+  List<String> _times = [];
 
   Future<void> _clearBooking() async {
     await _secureStorage.delete(key: 'active_booking');
@@ -56,6 +52,24 @@ class _OrderScreenState extends State<OrderScreen> {
     super.initState();
     _loadBooking();
     // _clearBooking();
+
+    _generateDates();
+    _generateTimes();
+  }
+
+  /// Генерация списка дат на 30 дней вперед
+  void _generateDates() {
+    DateTime now = DateTime.now();
+    _dates = List.generate(30, (index) {
+      DateTime date = now.add(Duration(days: index));
+      return DateFormat('dd MMM', 'ru').format(date); // Пример: 17 Мар.
+    });
+  }
+
+  /// Генерация списка времени от 00:00 до 23:00
+  void _generateTimes() {
+    _times =
+        List.generate(24, (index) => '${index.toString().padLeft(2, '0')}:00');
   }
 
   /// **Загрузка сохранённой записи из Secure Storage**
@@ -297,29 +311,37 @@ class _OrderScreenState extends State<OrderScreen> {
                       ),
                     ),
                   ] else ...[
-                    TextField(
-                      controller: _nameController,
-                      decoration: InputDecoration(
-                        labelText: "Имя",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                    Container(
+                      height: 50,
+                      margin: EdgeInsets.only(bottom: 5),
+                      child: TextField(
+                        controller: _nameController,
+                        decoration: InputDecoration(
+                          labelText: "Имя",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
                     ),
                     const SizedBox(height: 11),
-                    TextField(
-                      controller: _phoneController,
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        labelText: "Телефон",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                    SizedBox(
+                      height: 50,
+                      child: TextField(
+                        controller: _phoneController,
+                        keyboardType: TextInputType.phone,
+                        decoration: InputDecoration(
+                          labelText: "Телефон",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
                     ),
                     const SizedBox(height: 16),
                     CustomDropdown(
                       items: _services,
+                      placeholder: 'Выберите услугу',
                       selectedValue: _selectedService,
                       onChanged: (value) {
                         setState(() => _selectedService = value);
@@ -332,6 +354,7 @@ class _OrderScreenState extends State<OrderScreen> {
                           flex: 3,
                           child: CustomDropdown(
                             items: _dates,
+                            placeholder: 'Выберите день',
                             selectedValue: _selectedDate,
                             onChanged: (value) {
                               setState(() => _selectedDate = value);
@@ -344,6 +367,7 @@ class _OrderScreenState extends State<OrderScreen> {
                           child: CustomDropdown(
                             items: _times,
                             selectedValue: _selectedTime,
+                            placeholder: 'Время',
                             onChanged: (value) {
                               setState(() => _selectedTime = value);
                             },
@@ -359,7 +383,10 @@ class _OrderScreenState extends State<OrderScreen> {
                         onPressed: _bookAppointment,
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.purple,
-                            foregroundColor: Colors.white),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            )),
                         child: _isLoading
                             ? const CircularProgressIndicator(
                                 color: Colors.white)
