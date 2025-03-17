@@ -1,7 +1,9 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_swiper_view/flutter_swiper_view.dart';
+import 'package:mobile_abz/app/router/app_router.gr.dart';
 import 'package:mobile_abz/app/themes/app_colors.dart';
 import 'package:mobile_abz/presentation/widgets/layouts.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -45,6 +47,39 @@ class _PostTemplateState extends State<PostTemplate> {
         title: widget.title,
         currentIndex: 1,
         isLoading: widget.isLoading,
+        floatingActionButton: Container(
+          width: double.infinity,
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.pink.withOpacity(0.5),
+                blurRadius: 11.6,
+                spreadRadius: 2,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: ElevatedButton(
+            onPressed: () => AutoRouter.of(context).push(const OrderRoute()),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.purple,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 16),
+            ),
+            child: const Text(
+              'Хочу записаться',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
         slivers: [
           SliverToBoxAdapter(
               child: Animate(
