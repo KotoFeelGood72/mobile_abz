@@ -1,0 +1,2 @@
+/Users/viktorkotenko/Desktop/mobile_abz/android/app/.cxx/RelWithDebInfo/535o2x58/x86_64/CMakeFiles/edit_cache.dir
+/Users/viktorkotenko/Desktop/mobile_abz/android/app/.cxx/RelWithDebInfo/535o2x58/x86_64/CMakeFiles/rebuild_cache.dir
